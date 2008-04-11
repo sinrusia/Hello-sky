@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	creationComplete="initApp()" backgroundColor="#FFFFFF">
+	<mx:Script>
+		<![CDATA[
+			import kr.co.reflect.Property;
+			import kr.co.reflect.Field;
+			import kr.co.reflect.XClass;
+			import kr.co.reflect.Method;
+			import flash.utils.getQualifiedClassName;
+			import flash.utils.describeType;
+			import vo.MyVo;
+			import flash.utils.getDefinitionByName;
+			
+			public function initApp():void
+			{
+				trace(flash.utils.getDefinitionByName("vo::MyVo"));
+			}
+			
+			public function start():void
+			{
+				var o:Object = getVO();
+				trace(flash.utils.getQualifiedClassName(o));
+				trace(flash.utils.getQualifiedClassName(flash.utils.describeType(o)..accessor));
+				var x:XMLList = flash.utils.describeType(o)..accessor;
+				trace(x);
+				
+				o = o as MyVo;
+				
+				var myVO:MyVo = MyVo(o);
+			}
+			
+			public function testReflection(o:Object):*
+			{
+				var i:int	= 0;
+				var j:int	= 0;
+				try{
+					//
+					var cls:XClass = XClass.forName(o.tag);
+					//===========================================
+					var field:Field = cls.getField("comp");
+					if(field != null){
+						field.setValue(null, "SeTValue");
+					}
+					trace(field.getValue(field.getDeclaringClass()));
+					trace(field.getValue(cls.newInstance()));
+					trace(cls.newInstance()["comp"]);
+					//===========================================
+					var method:Method = cls.getMethod("process");
+					var arglist:Array = new Array();
+					arglist[0] = "arg1";
+					arglist[1] = "arg2";
+					var result:Object = method.invoke(cls, arglist);
+					trace(result);
+					//===========================================
+					var propertyList:Array = cls.getPropertys();
+					for(i = 0; i < propertyList.length; i++){
+						var ppt:Property = propertyList[i];
+						trace("===== property =====");
+						trace("name = " + ppt.name);
+						trace("type = " + ppt.type);
+						trace("access = " + ppt.access);
+						trace("declaredBy = " + ppt.declaredBy);
+						trace("class = " + ppt.getDeclaringClass());
+					}
+					//===========================================
+					var fieldlist:Array = cls.getFields();
+					for(i = 0; i < fieldlist.length; i++){
+						var fld:Field = fieldlist[i];
+						trace("===== field =====");
+						trace("name = " + fld.name);
+						trace("class = " + fld.getDeclaringClass());
+						trace("type = " + fld.type);
+						trace("----------");
+					}
+					//===========================================
+					var methlist:Array = cls.getMethods();
+					for(i = 0; i < methlist.length; i++){
+						var m:Method =  methlist[i];
+						trace("name = " +  m.name);
+						trace("className= " + m.getDeclaringClass());
+						var ps:Array = m.parameters;
+						for(j = 0; j < ps.length; j++){
+							trace(ps[j].toString());
+						}
+						
+					}
+					//==================isInstance=========================
+					
+					trace("TypeTest:" + cls.isInstance(MyVo));
+					trace("TypeTest:" + cls.isInstance(String));
+					
+					//===========================================
+					var methods:Array = cls.getMethods()
+					for(i = 0; i < methods.length; i++){
+						trace(methods[i].toString());
+					}
+					//===========================================
+				}catch(err:Error){
+					trace(err.message);
+				}
+			}
+			
+			public function getVO():*
+			{
+				var o:Object = new Object();
+				o.Name = "str";
+				o.tag = "vo.MyVo";
+				
+				testReflection(o);
+				
+				trace("====================================================");
+				var myClass:Object;
+				var rtnClass:Object;
+				
+				try{
+					myClass = flash.utils.getDefinitionByName(o.tag);
+					rtnClass = new myClass();
+					
+				}catch(err:Error){
+					trace(err.message);
+					return o;
+				}
+				var arrr:Array = new Array();
+				arrr.push("process");
+				arrr.push("prcdd");
+				
+				
+				var func:Function = rtnClass["process"];
+				
+				var result:String;
+				
+				trace(func.apply(result, arrr));
+				var str:String = func.apply(result, arrr);
+				
+				trace("result : " +  result);
+				
+				for(var key:String in o){
+					if(key != "tag"){
+						rtnClass[key] = o[key]; 
+					}
+				}
+				
+				trace(flash.utils.describeType(rtnClass));
+				return rtnClass;
+			}
+			
+			public function addObj():void
+			{
+				new MyVo();
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:VBox width="200" height="200" borderStyle="solid" 
+			backgroundColor="#333333" autoLayout="false">
+			<mx:Button label="start" click="start()"/>
+			<mx:Button/>
+			<mx:Button id="btn" click="btn.x += 10"/>
+			<mx:Button id="btn2" creationComplete="btn2.x = 100; btn2.y = 75"/>
+		</mx:VBox>
+		<mx:VBox width="200" height="200" backgroundColor="#efefef">
+			
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:VBox>
+<mx:Panel id="p1" title="Panel 1" backgroundColor="#FF0000"/>
+<mx:Panel id="p2" title="Panel 2" backgroundColor="#00FF00"/>
+<mx:Panel id="p3" title="Panel 3" backgroundColor="#0000FF"/>
+</mx:VBox>
+<mx:HBox>
+<mx:Button label="Toggle Panel 2 Visible"
+click="{p2.visible=!p2.visible;}"/>
+<mx:Button label="Toggle Panel 2 in Layout"
+click="{p2.includeInLayout=!p2.includeInLayout;}"/>
+</mx:HBox>
+
+</mx:Application>
