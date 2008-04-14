@@ -85,5 +85,10 @@
 			stopDrag();
 			drawHandle( line, fill );
 		}
+		
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void{
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			trace(this," = ",x, y);
+		}
 	}
 }

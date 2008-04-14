@@ -177,6 +177,7 @@
 		
 		public function reDraw():void
 		{
+			trace("reDraw", to_startX, ",", to_startY);
 			start.x = to_startX;
 			start.y = to_startY;			
 			
@@ -229,6 +230,7 @@
 		public function drawLine():void 
 		{	
 			//trace("drawLine >> ", start.x, start.y, end.x, end.y,  _to_thick, _to_color, 1 );
+			trace("drawLine", start.x);
 			with( graphics ) 
 			{				
 				clear();
@@ -245,11 +247,18 @@
 		
 		private function settingPropertyData():void
 		{
-			PropertyData.getInstance().startX = start.x;
-			PropertyData.getInstance().startY = start.y;
+			trace(start.x," = ",start.y);
+			var myP:Point = this.localToGlobal(new Point(start.x, start.y));
+			trace(myP.x," = ",myP.y);
 			
-			PropertyData.getInstance().endX = end.x;
-			PropertyData.getInstance().endY = end.y;
+			
+			PropertyData.getInstance().startX = myP.x;
+			PropertyData.getInstance().startY = myP.y;
+			
+			myP = this.localToGlobal(new Point(end.x, end.y));
+			
+			PropertyData.getInstance().endX = myP.x;
+			PropertyData.getInstance().endY = myP.y;
 			
 			PropertyData.getInstance().x = this.x;
 			PropertyData.getInstance().y = this.y;
@@ -302,10 +311,15 @@
 			//trace("stageX: " + e.stageX + ", " + e.stageY);
 			trace("xy: " + x + ", " + y);
 			//trace("xy: " + x + ", " + y);
-			var pp:Point = this.localToGlobal(new Point(x, y));
+			//var pp:Point = this.localToGlobal(new Point(x, y));
+			//var pp:Point = new Point(x, y);
 			
-			start.x = pp.x/2;
-			start.y = pp.y/2;
+			//start.x = pp.x/2;
+			//start.y = pp.y/2;
+			//start.x = pp.x/2;
+			//start.y = pp.y/2;
+			
+			trace(e.stageX);
 			
 			PropertyData.getInstance().stageX = e.stageX;
 			PropertyData.getInstance().stageY = e.stageY;
