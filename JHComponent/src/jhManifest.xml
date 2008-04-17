@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<componentPackage>
+    <component id="JHDataGrid" class="com.jh.controls.JHDataGrid"/>
+    <component id="JHDataGridColumn" class="com.jh.controls.dataGridClasses.JHDataGridColumn"/>
+    <component id="JHDataGridItemRenderer" class="com.jh.controls.dataGridClasses.JHDataGridItemRenderer"/>
+</componentPackage>
