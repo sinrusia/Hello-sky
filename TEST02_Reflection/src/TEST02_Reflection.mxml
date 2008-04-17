@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+2. 이차원 배열은 엘리먼트의 위치가 픽셀의 위치, 엘리먼트의 값이 색상 데이터 라고 보면 이미지를 나타내는 포맷으로 볼수 도 있습니다. 
+flex를 사용 가상의 이미지 처리 모듈(이차원 배열)을 만들어 주세요. 
+이미지 처리 모듈의 기능은 아래의 두가지 경우만 구현해주세요. 
+- 미러(거울에서 본 것처럼 좌우 반대로 회전), 
+- Crop(특정 사각형 영역 떼어내기) params : 시작점 x, 시작점 y, width, height 
+
+* 좌우 미러기능 구현... Left, Right버튼을 클릭하면 이미지의 좌우 대칭이 생깁니다.
+* 회전기능까지는 하지 못했습니다.
+
+* crop 기능 : 처음 나온 이미지 위에서 특정 영역을 선택하고 해당 영역을 드래그하면 이미지가 일정영역이 떼어져 나오는걸 확인 하실수 있을것입니다.
+	- 처리방식 처음 이미지 로딩시 이미지의 BitmapData를 따로 저장합니다.
+	- 1차적으로 이미지 일정영역을 선택합니다.
+	- 선택한후 해당 영역을 클릭하면 선택한 영역만큼의 bitmapdata를 복사하고 새로운 컴포넌트로 생성을 합니다.
+	- 생성된 새로운 이미지 컴포넌트를 ,DragManager를 통해서 드래그 할 수 있도록 하였습니다.
+	- 원하는 위치에 이미지를 가져다가 놓을 수 있습니다.
+* 버그 및 안된 것
+	- Drag&Drop 기능 사용에 약간의 미흡한점이 있어서 완벽한 구현은 하지 못하였습니다.
+	- 마우스 포인터와 이미지의 처리
+	- Drag Drop가 완료된 후 원본에서 사라지는
+	
+
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	creationComplete="initApp()" 
+	xmlns:com="com.*">
+	<mx:Style source="/asstes/css/main.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.IUIComponent;
+			import mx.managers.DragManager;
+			import mx.core.DragSource;
+			import mx.events.DragEvent;
+			import flash.debugger.enterDebugger;
+			import mx.core.UIComponent;
+			
+			private var imageData:BitmapData;
+			
+			private var ui:UIComponent;
+			
+			private var startp:Point;
+			
+			private var drawUI:UIComponent;
+			
+			
+			private function initApp():void{
+				//블러그 RSS가져오기
+				var http:HTTPService = new HTTPService();
+				http.addEventListener(ResultEvent.RESULT, resultHandler);
+				http.addEventListener(FaultEvent.FAULT, faultHandler);
+				http.url = "http://sinrusia.tistory.com/rss";
+				
+				var params:Object = new Object();
+				params.category = "Swing";
+				
+				http.request = params;
+				http.send();
+				
+				var loader:Loader = new Loader();
+				loader.load(new URLRequest("20080407001708_337_0.jpg"));
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadCompleteHandler); 
+				
+				drawUI = new UIComponent();
+				imageBox.addChild(drawUI);
+				drawUI.percentWidth = 100;
+				drawUI.percentHeight = 100;
+			}
+			
+			private function resultHandler(event:ResultEvent):void{
+				trace(event.result);
+			}
+			
+			private function faultHandler(event:FaultEvent):void{
+				trace(event.message);
+			}
+			
+			/**
+			 * 이미지 로드가 완료되면 호출되는 메소드이다.
+			 */
+			private function loadCompleteHandler(event:Event):void{
+				imageData = event.target.content.bitmapData;
+				sourceImg.source =  new Bitmap(imageData);
+			}
+			
+			/**
+			 * 버튼 클릭시 호출하는 함수로 
+			 * Reflection기능을 수행한다.
+			 */
+			private function reflectionImage(type:String):void{
+				var matrix:Matrix = new Matrix(-1, 0, 0, 1, sourceImg.width, 0);
+				
+				var bitmapData:BitmapData = new BitmapData(sourceImg.width, sourceImg.height);
+				
+				bitmapData.draw(sourceImg, matrix);
+				
+				var rectangle:Rectangle = new Rectangle(0, 0, sourceImg.width, sourceImg.height);
+				
+				var bitmap:Bitmap = new Bitmap();
+				
+				bitmap.bitmapData = bitmapData;
+				
+				ui = new UIComponent();
+				mainBox.addChild(ui);
+				
+				ui.addChild(bitmap);
+				
+				ui.width = sourceImg.width;
+				ui.height = sourceImg.height;
+				
+				if(type == "left"){
+					ui.y = imageBox.y;
+					ui.x = imageBox.x - imageBox.width;
+				}else if(type == "right"){
+					ui.y = imageBox.y;
+					ui.x = imageBox.x + imageBox.width;
+				}
+				
+			}
+			
+			/**
+			 * 상자그리기 전에 마우스를 클릭했을때
+			 */
+			private function mouseDownHandler(event:MouseEvent):void{
+				trace("Down");
+				startp = imageBox.globalToLocal(new Point(event.stageX, event.stageY));
+				imageBox.setChildIndex(drawUI, imageBox.getChildren().length - 1);
+				imageBox.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			}
+			
+			private function mouseUpHandler(event:MouseEvent):void{
+				imageBox.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			}
+			
+			private function rollOutHandler(event:MouseEvent):void{
+				imageBox.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			}
+			
+			/**
+			 * 마우스 이동시 상자 그리는 함수
+			 */
+			private function mouseMoveHandler(event:MouseEvent):void{
+				trace("draw", event.localX);
+				var endp:Point = imageBox.globalToLocal(new Point(event.stageX, event.stageY));
+				drawUI.graphics.clear();
+				drawUI.graphics.lineStyle(1, 0, 1);
+				drawUI.graphics.beginFill(0, 0);
+				drawUI.graphics.drawRect(startp.x, startp.y, endp.x - startp.x, endp.y - startp.y);
+				rect = new Rectangle(startp.x, startp.y, endp.x - startp.x, endp.y - startp.y);
+				drawUI.addEventListener(MouseEvent.ROLL_OVER, overHandler);
+				drawUI.addEventListener(MouseEvent.ROLL_OUT, outHandler);
+				drawUI.addEventListener(MouseEvent.MOUSE_DOWN, clickHandler); 
+				drawUI.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+				event.updateAfterEvent();
+			}
+			
+			private var rect:Rectangle = new Rectangle();
+			
+			private function moveHandler(event:MouseEvent):void{
+				
+			}
+			
+			private function overHandler(event:MouseEvent):void{
+				imageBox.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			}
+			
+			private function outHandler(event:MouseEvent):void{
+				imageBox.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			}
+			
+			
+			private function clickHandler(event:MouseEvent):void{
+				drawUI.graphics.clear();
+				imageBox.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+				
+				var source:BitmapData = new BitmapData(mainBox.width, mainBox.height);
+				source.draw(mainBox, new Matrix());
+				
+				var thumbWidth:Number = rect.width < 0 ? (rect.width * -1) : rect.width;
+				var thumbHeight:Number = rect.height < 0 ? (rect.height * -1) : rect.height;
+				var thumbX:Number = rect.width < 0 ? rect.x - thumbWidth : rect.x;
+				var thumbY:Number = rect.height < 0 ? rect.y - thumbHeight : rect.y;
+				
+				var newData:BitmapData = new BitmapData(thumbWidth, thumbHeight);
+				newData.copyPixels(imageData, new Rectangle(thumbX, thumbY, thumbWidth, thumbHeight), new Point(0, 0));
+				
+				for(var i:int = 0; i < thumbWidth; i++){
+					for(var j:int = 0; j <thumbHeight; j++){
+						imageData.setPixel32(i+thumbX, j+thumbY, 0xFFFFFFFF);
+						
+					}
+				}
+				
+				var bitmap:Bitmap = new Bitmap();
+				bitmap.bitmapData = newData;
+				
+				var ui:UIComponent = new UIComponent();
+				ui.addChild(bitmap);
+				mainBox.addChild(ui);
+				var compPoint:Point = mainBox.globalToContent(new Point(imageBox.x, imageBox.y));
+				ui.x = thumbX + imageBox.x;
+				ui.y = thumbY + imageBox.y;
+				ui.width = thumbWidth;
+				ui.height = thumbHeight;
+				
+				ui.addEventListener(DragEvent.DRAG_START, dragStartHandler);
+
+				var dragEvent:DragEvent = new DragEvent(DragEvent.DRAG_START);
+				dragEvent.dragInitiator = UIComponent(ui);
+				
+				var drgpPoint:Point = mainBox.globalToLocal(new Point(event.stageX, event.stageY));
+				dragEvent.buttonDown = true;
+				ui.dispatchEvent(dragEvent); 
+			}
+			
+			/**
+			 * 이미지 드래그 시작 핸들러 함수
+			 */
+			private function dragStartHandler(event:DragEvent):void
+			{
+				var dragSource:DragSource = new DragSource();
+				var itemData:Object = event.currentTarget;
+				dragSource.addData(itemData, "format");
+				
+				var source:BitmapData = new BitmapData(event.dragInitiator.width, event.dragInitiator.height);
+				source.draw(event.dragInitiator, new Matrix());
+				
+				var viewData:BitmapData = new BitmapData(event.dragInitiator.width, event.dragInitiator.height);
+				viewData.copyPixels(source, new Rectangle(0, 0, event.dragInitiator.width, event.dragInitiator.height),new Point(0,0));
+				
+				var bitmap:Bitmap = new Bitmap(viewData);
+				
+				var image:Image = new Image();
+				image.source = bitmap;
+				
+				DragManager.doDrag(event.dragInitiator, dragSource, event, image, 0, 0, 1);
+			}
+			
+			private function doDragEnterHandler(event:DragEvent):void{
+				DragManager.acceptDragDrop(mainBox);
+				//DragManager.showFeedback(DragManager.MOVE);
+			}
+			
+			private function doDragDropHandler(event:DragEvent):void{
+				event.dragInitiator.x = Canvas(event.currentTarget).mouseX;
+				event.dragInitiator.y = Canvas(event.currentTarget).mouseY;
+				trace(event.dragInitiator);
+			} 
+			
+			private function doDragCompleteHandler(event:DragEvent):void{
+				trace(event);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%">
+		
+		<!-- Reflection -->
+		<com:JHHBox height="46" width="100%" verticalAlign="middle">
+			<mx:Text text="Left" click="reflectionImage('left')" color="#FFFFFF"/>
+			<mx:Text text="Right" click="reflectionImage('right')" color="#FFFFFF"/>
+		</com:JHHBox>
+		
+		<!-- Image Canvas -->
+		<mx:Canvas width="100%" height="100%" id="mainBox" 
+			dragEnter="doDragEnterHandler(event)"
+			dragDrop="doDragDropHandler(event)"
+			dragComplete="doDragCompleteHandler(event);"
+			backgroundColor="0" backgroundAlpha="0" >
+			
+			
+			<mx:Canvas id="imageBox" x="400" y="50"
+				mouseDown="mouseDownHandler(event)" 
+				mouseUp="mouseUpHandler(event)"
+				rollOut="rollOutHandler(event)"
+				backgroundColor="0" 
+				backgroundAlpha="0">
+				<mx:Image id="sourceImg"/>
+			</mx:Canvas>
+			
+		</mx:Canvas>
+	</mx:VBox>
+</mx:Application>
