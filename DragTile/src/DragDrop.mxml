@@ -88,15 +88,15 @@
 			</qs:DragTile>
 			</VBox>
 			<VBox width="100%" horizontalGap="0" height="150" borderColor="#FFFFFF" borderStyle="solid">
-						<qs:DragTile id="cmp2" width="100%" height="100%" dataProvider="{targetData}" 
-							dragEnter="event.target.allowDrag(event);" 
-							dragOver='event.target.showDragFeedback(event,event.shiftKey? "copy":"move")'
-							>				
-				<qs:itemRenderer>
-					<Component>
-						<qs:BitmapTile />
-					</Component>
-				</qs:itemRenderer>				
+				<qs:DragTile id="cmp2" width="100%" height="100%" dataProvider="{targetData}" 
+					dragEnter="event.target.allowDrag(event);" 
+					dragOver='event.target.showDragFeedback(event,event.shiftKey? "copy":"move")'
+					>
+					<qs:itemRenderer>
+						<Component>
+							<qs:BitmapTile />
+						</Component>
+					</qs:itemRenderer>
 			</qs:DragTile>
 			</VBox>
 		</VBox>

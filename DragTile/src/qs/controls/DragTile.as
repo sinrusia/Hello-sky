@@ -487,7 +487,7 @@ package qs.controls
 		private function dragOut(e:DragEvent):void
 		{
 			_dragTargetIdx = NaN;
-			animator.animationSpeed = .2;						
+			animator.animationSpeed = .2;
 			animator.invalidateLayout(true);
 		}
 		

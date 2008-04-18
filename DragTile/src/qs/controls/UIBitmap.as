@@ -13,7 +13,7 @@ package qs.controls
 		{
 			super((bmd as BitmapData),pixelSnapping,smoothing);
 			if(bmd is IUIComponent)
-			{				
+			{
 				var data:BitmapData = new BitmapData(bmd.width,bmd.height);
 				var o:* = bmd;
 				data.draw(o);
@@ -41,6 +41,6 @@ package qs.controls
 		{
 			width = newWidth;
 			height = newHeight;
-		}								
+		}
 	}
 }
