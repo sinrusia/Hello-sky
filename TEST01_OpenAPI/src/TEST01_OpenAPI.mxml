@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-문제1. 검색어를 키보드 입력을 통해 받고, 검색된 결과를 화면에 보여주세요. 
-검색은 다음 open api 혹은 익숙한 open api를 사용하시고, 검색 결과는 최대 20개 까지만 보여주세요. 
-접속이 안되거나, 검색 결과가 없을 경우에는 사용자에게 에러를 보여주세요. 
-구현은 flex를 사용해주세요. 
-
 openApikey	= 2026e6912c1b489850f258c205a10dec4b85cd97
 searchURL	= http://apis.daum.net/search/knowledge
 resultType	= json
