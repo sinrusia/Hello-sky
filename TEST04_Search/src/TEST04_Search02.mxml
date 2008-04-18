@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* BM(Boyer-Moore)알고리즘을 이용하여 작성하였습니다.
+* 검색은 패턴 뒤에서 수행하도록 되어있습니다.
+* 검색중 불일치시 중복되는 문자가 있을경우  해당 인덱스로 이동하도록 되어 있습니다.
+* 중복되는 문자가 없을경우 불일치한 문자가 패턴에 포함하는경우 해당 위치로 이동하고, 
+포함하지 않을경우 패턴 길이만큼 이동하도록 한다.  
+* 앞선 KMP 알고리즘보다 검색속도는 빠릅니다.
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute">
+	<mx:Style source="/asstes/css/main.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+		
+			public var ASIZE:int = 256;
+			
+			private function processing():void{
+				
+				var timer:Date = new Date();
+				var startTime:Number = timer.getTime();
+				
+				var x:String = txtSearchKey.text;
+				var y:String = myTxa.text;
+				
+				var i:int;		// roop counter
+				var j:int;		// roop counter
+				var m:int;		// 패턴 문자열의 길이
+				var n:int;		// 소스 문자열의 길이
+				
+				var bmBc:Array = new Array(ASIZE);		// bad-character index value
+				var bmGs:Array;							// good-suffix index value
+				var tempBmBCVal:int;					// 검색시 문자 자리수 임시 저장변수
+				
+				m = x.length;
+				n = y.length;
+				bmGs = new Array(m + 1);
+				
+				bmBc = preBmBc(x, m, bmBc);		// bad-character index create
+				bmGs = preBmGs(x, m , bmGs);	// good-suffix index create
+				
+				j = 0;
+				
+				var count:int = 0; // 패턴 개수
+				var loopCount:int = 0;
+				// roop문 
+				// 소스문자열길이-패턴문자열길이 만큼 루프를 수행하도록 한다.
+				while(j <= n - m){
+					// roop 문
+					// i = m - 1 초기값 , i가 0보다 크거나 같을때까지 수행하도록한다.
+					// 소스문자와 패턴의 문자가 같으면 수행하도록 한다.
+					for(i = m - 1;i >= 0&& x.charCodeAt(i) == y.charCodeAt(i + j); i--);
+					
+					// i가 0보다 작으면 문자열을 찾은경우
+					if(i < 0){
+						j += bmGs[0];
+						
+						count++;
+						result.text += "Index = " + (j - m) + "\n";
+						result.text += "SearchCount = " + count + "\n";
+					}else{
+						//문자가 다른경우 위치를 계산하기 위한 프로세스
+						//일단 문자코드가 ASCII인지 체크한다.
+						//trace(y.charAt(i+j),"=",y.charCodeAt(i+j));
+						if(y.charCodeAt(i+j) >= 0 && y.charCodeAt(i+j) <= 255)
+							tempBmBCVal = bmBc[y.charCodeAt(i+j)];	//해당 문자의 자리수를 가져오도록한다.
+						else
+							tempBmBCVal = 1;
+						
+						//검색할 소스의 인덱스 위치값을 구한다..
+						j+=BM_MAX(bmGs[i], tempBmBCVal - m + 1 + i);
+					}
+					
+					loopCount++;
+				}
+				result.text += "totalCount = "+ loopCount + "\n";
+				
+				var endTimer:Date = new Date();
+				var endTime:Number = endTimer.getTime();
+				
+				result.text += "duration= " + (endTime - startTime) + "\n";
+			}
+			
+			/**
+			 * 두개의 인자값중 가장 큰 값을 리턴하도록 합니다.
+			 */
+			private function BM_MAX(a:int, b:int):int{
+				return a>=b ? a:b;
+			}
+			
+			private function preBmBc(x:String, m:int, bmBc:Array):Array{
+				var i:int = 0;
+				
+				for(i = 0; i < ASIZE; i++)
+					bmBc[i] = m;
+				
+				for(i = 0; i < m; i++){
+					var code:int = x.charCodeAt(i); 
+					if(code >= 0 && code <= 255)
+						bmBc[code] = m - i -1;
+				}
+				
+				return bmBc;
+			}
+			
+			//접미사처리
+			private function suffixes(x:String, m:int, suff:Array):Array{
+				var f:int = 0;
+				var g:int = 0;
+				var i:int = 0;	// roop counter
+				
+				suff[m - 1] = m;	//패턴 마지막 배열에 패턴 길이를 기본값으로 설정한다.
+				g = m - 1;			// 초기값 설정
+				
+				//뒤에서 부터 앞으로 
+				//그런데 -2를 했다 이유는 아직 모름
+				for(i = m - 2; i >= 0; --i){	//반복문의 기본값을 패턴의 뒤에서 2번째값으로 한다.
+					if(i > g && suff[i + m - 1 - f] < i - g)
+						suff[i] = suff[i + m - 1 - f];
+					else
+					{
+						if(i < g)
+							g = i;
+						f = i;
+						
+						while(g >= 0&& x.charAt(g) == x.charAt(g + m - 1 - f))
+							g--;
+						suff[i] = f - g;
+					}
+				}
+				return suff;
+			}
+			
+			/**
+			 * good-suffix 인덱스값을 처리하도록 합니다.
+			 */
+			private function preBmGs(x:String, m:int, bmGs:Array):Array{
+				var i:int = 0;	//roop counter
+				var j:int = 0;
+				var suff:Array = new Array(x.length + 1);
+				
+				// make suffix
+				suff = suffixes(x, m, suff);
+				
+				//패턴길이만큼 반목문을 수행하고 bmGs에 패턴 길이를 기본값으로 설정한다.
+				for(i = 0; i < m; i++){
+					bmGs[i] = m;
+				}
+				
+				j = 0;
+				
+				for(i = m - 1; i >= 0; i--){
+					
+					if(suff[i] == (i + 1)){
+						for(;j< m - 1 - i; j++){
+							if(bmGs[j] == m){
+								bmGs[j] = m - 1 - i;
+							}
+						}
+					}
+				}
+				
+				for(i = 0; i <= m - 2; i++){
+					bmGs[m - 1 - suff[i]] = m - 1 - i;
+				}
+				
+				return bmGs;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20" verticalGap="20">
+	
+		<mx:HBox width="100%" borderStyle="solid" borderColor="#DFE9FB" backgroundColor="#E4ECFD" horizontalAlign="center" paddingTop="2" paddingBottom="2">
+			<mx:TextInput id="txtSearchKey" enter="processing()"/>
+			<mx:Button label="검색" click="processing()"/>
+		</mx:HBox>
+		
+		<mx:TextArea id="myTxa" width="100%" height="50%">
+			<mx:text>Three lens prototypes — At PMA Pentax showcased prototypes of the next three lenses: DA* 55/1.4 SDM, DA* 60-250/4 ED IF SDM, DA17-70/4 AL IF SDM. Notice that SDM is no longer a feature of DA* lenses only. 
+23 January, 2008 — Exciting new products announced — K20D, K200D, DA* 200/2.8 ED IF SDM, DA* 300/4 ED IF SDM, DA 35/2.8 Macro Limited, DA 18-55/3.5-5.6 AL II, DA 55-300/4-5.8 ED. The K20D features a 14.6 MP CMOS chip and several other improvements over the highly sucessful K10D! The K200D is a K10D redesign in a K100D body — excelent! And with the new lenses Pentax fill up important gaps in the lens line. Way to go, Pentax! 
+12 October, 2007 — 10th Anniversary of Bojidar Dimitrov's Pentax K-Mount Page — A big "Thank You" to all who have 
+AHO, A.V., 1990, Algorithms for finding patterns in strings. in Handbook of Theoretical Computer Science, Volume A, Algorithms and complexity, J. van Leeuwen ed., Chapter 5, pp 255-300, Elsevier, Amsterdam. 
+AOE, J.-I., 1994, Computer algorithms: string pattern matching strategies, IEEE Computer Society Press. 
+BAASE, S., VAN GELDER, A., 1999, Computer Algorithms: Introduction to Design and Analysis, 3rd Edition, Chapter 11, pp. ??-??, Addison-Wesley Publishing Company. 
+BAEZA-YATES R., NAVARRO G., RIBEIRO-NETO B., 1999, Indexing and Searching, in Modern Information Retrieval, Chapter 8, pp 191-228, Addison-Wesley. 
+BEAUQUIER, D., BERSTEL, J., CHRÉTIENNE, P., 1992, Éléments d'algorithmique, Chapter 10, pp 337-377, Masson, Paris. 
+BOYER R.S., MOORE J.S., 1977, A fast string searching algorithm. Communications of the ACM. 20:762-772. 
+COLE, R., 1994, Tight bounds on the complexity of the Boyer-Moore pattern matching algorithm, SIAM Journal on Computing 23(5):1075-1091. 
+CORMEN, T.H., LEISERSON, C.E., RIVEST, R.L., 1990. Introduction to Algorithms, Chapter 34, pp 853-885, MIT Press. 
+CROCHEMORE, M., 1997. Off-line serial exact string searching, in Pattern Matching Algorithms, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press. 
+CROCHEMORE, M., HANCART, C., 1999, Pattern Matching in Strings, in Algorithms and Theory of Computation Handbook, M.J. Atallah ed., Chapter 11, pp 11-1--11-28, CRC Press Inc., Boca Raton, FL. 
+CROCHEMORE, M., LECROQ, T., 1996, Pattern matching and text compression algorithms, in CRC Computer Science and Engineering Handbook, A. Tucker ed., Chapter 8, pp 162-202, CRC Press Inc., Boca Raton, FL. 
+CROCHEMORE, M., RYTTER, W., 1994, Text Algorithms, Oxford University Press. 
+GONNET, G.H., BAEZA-YATES, R.A., 1991. Handbook of Algorithms and Data Structures in Pascal and C, 2nd Edition, Chapter 7, pp. 251-288, Addison-Wesley Publishing Company. 
+GOODRICH, M.T., TAMASSIA, R., 1998, Data Structures and Algorithms in JAVA, Chapter 11, pp 441-467, John Wiley Sons. 
+GUSFIELD, D., 1997, Algorithms on strings, trees, and sequences: Computer Science and Computational Biology, Cambridge University Press. 
+HANCART, C., 1993. Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte, Ph. D. Thesis, University Paris 7, France. 
+KNUTH, D.E., MORRIS (Jr) J.H., PRATT, V.R., 1977, Fast pattern matching in strings, SIAM Journal on Computing 6(1):323-350. 
+LECROQ, T., 1992, Recherches de mot, Ph. D. Thesis, University of Orléans, France. 
+LECROQ, T., 1995, Experimental results on string matching algorithms, Software - Practice Experience 25(7):727-765. 
+SEDGEWICK, R., 1988, Algorithms, Chapter 19, pp. 277-292, Addison-Wesley Publishing Company. 
+SEDGEWICK, R., 1988, Algorithms in C, Chapter 19, Addison-Wesley Publishing Company. 
+STEPHEN, G.A., 1994, String Searching Algorithms, World Scientific. 
+WATSON, B.W., 1995, Taxonomies and Toolkits of Regular Language Algorithms, Ph. D. Thesis, Eindhoven University of Technology, The Netherlands. 
+WIRTH, N., 1986, Algorithms Data Structures, Chapter 1, pp. 17-72, Prentice-Hall. </mx:text>
+		</mx:TextArea>
+		
+		<mx:TextArea width="100%" height="50%" id="result"/>
+	</mx:VBox>
+</mx:Application>

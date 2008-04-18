@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* KMP(Knuth-Morris-Pratt)알고리즘을 이용하여 작성하였습니다.
+* 이 알고리즘은 원본길이 L, 패턴길이 M이라고했을때 일반적인 검색 시간 O(LM)만큼 걸리는 시간을 O(L+M)만큼 단축 시키는 알고리즘입니다.
+* 중복되는 패턴이 있을경우 중복되는 부분은 건너뛰어서 중복 검사를 하지 않는 알고리즘입니다.
+* 패턴검사에 앞서  pi배열을 생성하도록 합니다.
+
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute">
+	<mx:Style source="/asstes/css/main.css"/>
+	<mx:Script>
+		<![CDATA[
+			
+			public function processing():void{
+				var timer:Date = new Date();
+				var startTime:Number = timer.getTime();
+				
+				var pattern:String	= txtSearchKey.text;
+				
+				// pi 배열생성
+				var kmpNext:Array = preKMP(pattern);
+				
+				//문자열패턴 검색 수행
+				patternSearch(myTxa.text, pattern, kmpNext);
+				
+				var endTimer:Date = new Date();
+				var endTime:Number = endTimer.getTime();
+				
+				result.text += "duration= " + (endTime - startTime) + "\n";
+			}
+			
+			/**
+			 * pi배열 생성하기
+			 * 
+			 */
+			private function preKMP(pattern:String):Array{
+				var kmpNext:Array = new Array();
+				var i:int = 1;		// 패턴의 문자열 길이만큼 수행하도록 한다.
+				var j:int = 0;		// 비교원본 문자열
+				kmpNext[0] = 0;		// 0번째 배열값을 0으로 초기화 한다.
+				
+				while(i < pattern.length){
+					
+					//중복되는 문자열이 없는경우 접두사위치 카운트가 다운됩니다.
+					if(j > 0 && pattern.charAt(i) != pattern.charAt(j)){
+						j = kmpNext[j - 1];
+						continue;
+					}
+					
+					//중복문자열체크
+					if(pattern.charAt(i) == pattern.charAt(j)){
+						j++;
+						kmpNext[i] = j;
+					}else{
+						kmpNext[i] = kmpNext[j];
+					}
+					
+					i++;
+				}
+				
+				return kmpNext;
+			}
+			
+			/**
+			 * 문자열 패턴 검색을 수행합니다.
+			 * 
+			 */
+			private function patternSearch(source:String, pattern:String, kmpNext:Array):void
+			{
+				var i:int = 0;
+				var j:int = 0;
+				var count:int = 0;
+				
+				var loopCount:int = 0;
+				
+				while(i < source.length){
+					
+					if(source.charAt(i) == pattern.charAt(j)){
+						//문자 비교시 같을 경우 source와 patter의 인덱스값을 증가 시킨다.
+						i++;
+						j++;
+					}else if(j==0){
+						//source 인덱스위치를 증가 시킨다.
+						i++;
+					}else{
+						//패턴이 일치하다가 불일치시 접두사의 위치만큼 패턴 인덱스를 변경한다.
+						j = kmpNext[j];
+					}
+					
+					// 패턴이 일치할경우 수행하도록 한다.
+					if(j == pattern.length){
+						count++;
+						j = 0;
+						
+						result.text += "Index = " + (i - (pattern.length)) + "\n";
+						result.text += "SearchCount = " + count + "\n";
+					}
+					loopCount++;
+				}
+				
+				result.text += "totalCount = "+ loopCount + "\n";
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20" verticalGap="20">
+		<mx:HBox width="100%" borderStyle="solid" borderColor="#DFE9FB" backgroundColor="#E4ECFD" horizontalAlign="center" paddingTop="2" paddingBottom="2">
+			<mx:TextInput id="txtSearchKey" enter="processing()"/>
+			<mx:Button label="검색" click="processing()"/>
+		</mx:HBox>
+	
+		<mx:TextArea id="myTxa" width="100%" height="50%">
+			<mx:text>Three lens prototypes — At PMA Pentax showcased prototypes of the next three lenses: DA* 55/1.4 SDM, DA* 60-250/4 ED IF SDM, DA17-70/4 AL IF SDM. Notice that SDM is no longer a feature of DA* lenses only. 
+23 January, 2008 — Exciting new products announced — K20D, K200D, DA* 200/2.8 ED IF SDM, DA* 300/4 ED IF SDM, DA 35/2.8 Macro Limited, DA 18-55/3.5-5.6 AL II, DA 55-300/4-5.8 ED. The K20D features a 14.6 MP CMOS chip and several other improvements over the highly sucessful K10D! The K200D is a K10D redesign in a K100D body — excelent! And with the new lenses Pentax fill up important gaps in the lens line. Way to go, Pentax! 
+12 October, 2007 — 10th Anniversary of Bojidar Dimitrov's Pentax K-Mount Page — A big "Thank You" to all who have 
+AHO, A.V., 1990, Algorithms for finding patterns in strings. in Handbook of Theoretical Computer Science, Volume A, Algorithms and complexity, J. van Leeuwen ed., Chapter 5, pp 255-300, Elsevier, Amsterdam. 
+AOE, J.-I., 1994, Computer algorithms: string pattern matching strategies, IEEE Computer Society Press. 
+BAASE, S., VAN GELDER, A., 1999, Computer Algorithms: Introduction to Design and Analysis, 3rd Edition, Chapter 11, pp. ??-??, Addison-Wesley Publishing Company. 
+BAEZA-YATES R., NAVARRO G., RIBEIRO-NETO B., 1999, Indexing and Searching, in Modern Information Retrieval, Chapter 8, pp 191-228, Addison-Wesley. 
+BEAUQUIER, D., BERSTEL, J., CHRÉTIENNE, P., 1992, Éléments d'algorithmique, Chapter 10, pp 337-377, Masson, Paris. 
+BOYER R.S., MOORE J.S., 1977, A fast string searching algorithm. Communications of the ACM. 20:762-772. 
+COLE, R., 1994, Tight bounds on the complexity of the Boyer-Moore pattern matching algorithm, SIAM Journal on Computing 23(5):1075-1091. 
+CORMEN, T.H., LEISERSON, C.E., RIVEST, R.L., 1990. Introduction to Algorithms, Chapter 34, pp 853-885, MIT Press. 
+CROCHEMORE, M., 1997. Off-line serial exact string searching, in Pattern Matching Algorithms, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press. 
+CROCHEMORE, M., HANCART, C., 1999, Pattern Matching in Strings, in Algorithms and Theory of Computation Handbook, M.J. Atallah ed., Chapter 11, pp 11-1--11-28, CRC Press Inc., Boca Raton, FL. 
+CROCHEMORE, M., LECROQ, T., 1996, Pattern matching and text compression algorithms, in CRC Computer Science and Engineering Handbook, A. Tucker ed., Chapter 8, pp 162-202, CRC Press Inc., Boca Raton, FL. 
+CROCHEMORE, M., RYTTER, W., 1994, Text Algorithms, Oxford University Press. 
+GONNET, G.H., BAEZA-YATES, R.A., 1991. Handbook of Algorithms and Data Structures in Pascal and C, 2nd Edition, Chapter 7, pp. 251-288, Addison-Wesley Publishing Company. 
+GOODRICH, M.T., TAMASSIA, R., 1998, Data Structures and Algorithms in JAVA, Chapter 11, pp 441-467, John Wiley Sons. 
+GUSFIELD, D., 1997, Algorithms on strings, trees, and sequences: Computer Science and Computational Biology, Cambridge University Press. 
+HANCART, C., 1993. Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte, Ph. D. Thesis, University Paris 7, France. 
+KNUTH, D.E., MORRIS (Jr) J.H., PRATT, V.R., 1977, Fast pattern matching in strings, SIAM Journal on Computing 6(1):323-350. 
+LECROQ, T., 1992, Recherches de mot, Ph. D. Thesis, University of Orléans, France. 
+LECROQ, T., 1995, Experimental results on string matching algorithms, Software - Practice Experience 25(7):727-765. 
+SEDGEWICK, R., 1988, Algorithms, Chapter 19, pp. 277-292, Addison-Wesley Publishing Company. 
+SEDGEWICK, R., 1988, Algorithms in C, Chapter 19, Addison-Wesley Publishing Company. 
+STEPHEN, G.A., 1994, String Searching Algorithms, World Scientific. 
+WATSON, B.W., 1995, Taxonomies and Toolkits of Regular Language Algorithms, Ph. D. Thesis, Eindhoven University of Technology, The Netherlands. 
+WIRTH, N., 1986, Algorithms Data Structures, Chapter 1, pp. 17-72, Prentice-Hall. </mx:text>
+		</mx:TextArea>
+		
+		<mx:TextArea width="100%" height="50%" id="result"/>
+	</mx:VBox>
+</mx:Application>
