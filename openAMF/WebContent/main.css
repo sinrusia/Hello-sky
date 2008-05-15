@@ -1,0 +1,75 @@
+
+body {
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color: #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+	color : Gray;
+	font : normal Verdana, Geneva, Arial, Helvetica, sans-serif;
+	background : #FFFFFF;
+}
+
+
+
+/* General font families for common tags */
+a:link,a:active,a:visited {
+	text-decoration: none;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 10px;
+	color : Gray;
+}
+
+a:hover		{
+	text-decoration: underline;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 10px;
+	color : Black;
+}
+
+hr	{ 
+	height: 0px; 
+	border: solid #D1D7DC 0px; 
+	border-top-width: 1px;
+}
+
+
+
+
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+
+input.post, textarea.post, select {
+
+	background-color : #FFFFFF;
+
+}
+
+
+
+input.button {
+	background-color : #DCDCDC;
+	color : #000000;
+	font-size: 11px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+input.submit {
+	background-color : #DCDCDC;
+	color : #000000;
+	font-size: 11px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.contentMain{
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 10px;
+}
+
