@@ -2,6 +2,8 @@ package org.fx.toby_Lesson1;
 
 import java.sql.SQLException;
 
+import org.fx.toby_Lesson1.user.dao.ConnectionMaker;
+import org.fx.toby_Lesson1.user.dao.DConnectionMaker;
 import org.fx.toby_Lesson1.user.dao.UserDao;
 import org.fx.toby_Lesson1.user.domain.User;
 
@@ -13,7 +15,8 @@ public class App
 {
     public static void main( String[] args ) throws ClassNotFoundException, SQLException
     {
-    	UserDao dao = new UserDao();
+    	ConnectionMaker connectionMaker = new DConnectionMaker();
+    	UserDao dao = new UserDao(connectionMaker);
     	
     	User user = new User();
     	user.setId("sprig");

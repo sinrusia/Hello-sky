@@ -10,9 +10,14 @@ import org.fx.toby_Lesson1.user.domain.User;
 
 public class UserDao {
 
+	private ConnectionMaker connectionMaker;
+	
+	public UserDao(ConnectionMaker connectionMaker) {
+		this.connectionMaker = connectionMaker;
+	}
+
 	public void add(User user)throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection("jdbc:mysql://localhost/spring", "spring", "kojh1576");
+		Connection c = connectionMaker.makeConnection();
 		PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
 		ps.setString(1, user.getId());
 		ps.setString(2, user.getName());
@@ -23,8 +28,7 @@ public class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection("jdbc:mysql://localhost/spring", "spring", "kojh1576");
+		Connection c = connectionMaker.makeConnection();
 		PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
 		ps.setString(1, id);
 		ResultSet rs = ps.executeQuery();
@@ -40,4 +44,5 @@ public class UserDao {
 		
 		return user;
 	}
+	
 }
