@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" change="onChange()" 
+	dataProvider="{parentDocument.repeat_arr}">
+   <mx:Script>
+        <![CDATA[
+        	import mx.controls.listClasses.BaseListData;
+        	import mx.collections.ArrayCollection;
+        	
+            public var result:String="";
+            
+        
+            // Override the set method for the data property.
+            override public function set data(value:Object):void 
+            {
+                super.data = value;
+                if (value != null) 
+                {
+                    var currentValue:String = value.repeat;
+                    var len:int = parentDocument.repeat_arr.length;
+                    for (var i:int = 0; i < len; i++) 
+                    {
+                        if (parentDocument.repeat_arr[i].data == currentValue) 
+                        {
+                            this.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    try{
+	                    result = this.selectedItem.data;
+                    } catch(err:Error){}
+                    repeatValue();
+                }
+            } 
+            
+            override public function get data():Object {
+                return super.data;
+            }
+            
+            public function onChange():void 
+            {
+            	if(this.selectedItem){
+	            	result = this.selectedItem.data;
+	            	data.repeat = result;		// change 이벤트가 발생하고 값을 변경해주지 않으면 한 박자씩 느리게 반영되므로
+	            	repeatValue();
+	            }
+            }          
+            
+            private function repeatValue():void
+            {
+ 				if( data.repeat == "2") data.week_day = "";
+				else data.week_day = "1";
+            }            
+            
+            
+        ]]>
+    </mx:Script>
+</mx:ComboBox>

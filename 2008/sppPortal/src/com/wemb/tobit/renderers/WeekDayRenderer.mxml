@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" rowCount="10" 
+	width="100%" change="onChange()" 
+	dataProvider="{parentDocument.weekDay_arr}">
+   <mx:Script>
+        <![CDATA[
+        	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+        	import mx.controls.listClasses.BaseListData;
+        	import mx.collections.ArrayCollection;
+        	
+            public var result:String="";
+            
+            // Override the set method for the data property.
+            override public function set data(value:Object):void 
+            {
+                super.data = value;
+                if (value != null) 
+                {
+                    var currentValue:String = data.week_day;
+                    
+                    if ( Number(currentValue) >= 1 )
+                    {
+                    	 var len:int = parentDocument.weekDay_arr.length;
+	                    for (var i:int = 0; i < len; i++) 
+	                    {
+	                        if (parentDocument.weekDay_arr[i].data == currentValue) 
+	                        {
+	                            this.selectedIndex = i;
+	                            result = this.selectedItem.data;
+	                            break;
+	                        }
+	                    }
+	                    this.visible = true;
+                    }
+                    else
+                	{
+                		this.visible = false;
+                	}
+                   
+                   /*  try{
+	                    result = this.selectedItem.data;
+	                } catch(err:Error){}
+                    if(data.repeat == "3" && data.week_day == ""){
+                    	data.week_day = "1"; 			
+                    	this.selectedIndex = 0;
+                    	result = this.selectedItem.data;
+                    }
+                    this.visible = true;
+					if(data.repeat == "1" || data.repeat == "2"){
+						this.visible = false;
+					} */
+                }
+            } 
+            
+            override public function get data():Object {
+                return super.data;
+            }    
+            
+                        
+            public function onChange():void 
+            {
+            	var s:Object = this.selectedItem;
+            	if(this.selectedItem){
+	            	result = this.selectedItem.data;
+	            } 
+            }               
+             
+        ]]>
+    </mx:Script>
+</mx:ComboBox>

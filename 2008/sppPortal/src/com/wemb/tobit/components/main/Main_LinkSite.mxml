@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.wemb.tobit.vo.MenuInfoChild;
+			import com.wemb.tobit.vo.MenuInfo;
+
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import popups.SetMyMenu;
+			import mx.core.Application;
+
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			private var _menuArr:Array;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					
+				}
+			}
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					Constants.GET_LINKSITE_LIST							
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				/* if(request.pageName != this.name)
+					return; */
+				
+				switch( command )
+				{	
+					case Constants.GET_LINKSITE_LIST:				
+						rs_getLinkSiteList( notification.getBody() as Request );
+					break;
+				}
+			}
+			
+			private function rs_getLinkSiteList( request:Request ):void
+			{
+				var temp:ArrayCollection;
+				_menuArr = new Array();
+				
+				if(request.result is Array) temp = new ArrayCollection(request.result as Array);
+				else temp = request.result as ArrayCollection;
+	
+				for(var i:int=0; i<temp.length; i++)
+				{
+					var tempMenu:MenuInfo = temp[i];
+					var menu:MenuInfoChild = makeMenu(tempMenu);
+					_menuArr.push(menu);
+				}
+				
+				linksite.menuArr = _menuArr;
+		 	}
+		 	
+		 	private function makeMenu(tempMenu:MenuInfo):MenuInfoChild
+			{
+				var menu:MenuInfoChild = new MenuInfoChild();
+				menu.level = tempMenu.level;
+				menu.id = tempMenu.id;
+				menu.parent = tempMenu.parent;
+				menu.menuCategory = tempMenu.menuCategory;
+				menu.menuName = tempMenu.menuName;
+				menu.menuOrder = tempMenu.menuOrder;
+				menu.menuUrl = tempMenu.menuUrl;
+				menu.menuUse = tempMenu.menuUse;
+				menu.menuType = tempMenu.menuType;
+				return menu;
+			}
+
+			private function setMyMenuClickHandler():void
+			{
+				var popup:SetMyMenu = SetMyMenu(PopUpManager.createPopUp(this as DisplayObject, SetMyMenu));
+				var p:Point = this.localToGlobal(new Point(mouseX, mouseY));
+				popup.x = p.x - 165;
+				popup.y = p.y;
+				popup.selectedMenu = _menuArr;
+				//PopUpManager.centerPopUp(popup as IFlexDisplayObject);
+				//popup.cbFunction = cbAddFunction;
+				popup.addEventListener(CloseEvent.CLOSE, function ():void{
+					popup = null;
+				});
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<tobit:LinkSite id="linksite" x="0" width="155" height="92"/>
+	
+</XCanvas>

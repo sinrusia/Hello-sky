@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.wemb.tobit.vo.BoardInfo;
+			import mx.collections.ArrayCollection;
+
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			
+			[Embed(source="/assets/main/board/icon_qna.png")] 
+			private var icon1:Class;
+			
+			[Embed(source="/assets/main/board/icon_newknowledge.png")] 
+			private var icon2:Class;
+			
+			[Embed(source="/assets/main/board/icon_data.png")] 
+			private var icon3:Class;
+			
+			[Bindable]private var _icon:Class;
+			private var _iconType:int;
+			[Bindable]private var _title:String = "";
+			private var board_ac:ArrayCollection;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					/* var param:Object = new Object();
+					param.user_id = ApplicationConfig.getInstance().userInfo.userId;
+					param.company = ApplicationConfig.getInstance().userInfo.companyCode;
+					
+					if ( _iconType == 1 ) facade.sendTobitService(Constants.GET_QNA_LIST, param, false);
+					else if ( _iconType == 2 ) facade.sendTobitService(Constants.GET_KNOWLEDGE_LIST, param, false);
+					else facade.sendTobitService(Constants.GET_FILEROOM_LIST, param, false); */
+				}
+			}
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					Constants.GET_QNA_LIST,
+					Constants.GET_KNOWLEDGE_LIST,
+					Constants.GET_FILEROOM_LIST
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				/* if(request.pageName != this.name)
+					return; */
+				
+				switch( command )
+				{	
+					case Constants.GET_QNA_LIST:				
+						rs_getQnaList( notification.getBody() as Request );
+					break;
+					case Constants.GET_KNOWLEDGE_LIST:				
+						rs_getKnowledgeList( notification.getBody() as Request );
+					break;
+					case Constants.GET_FILEROOM_LIST:				
+						rs_getFileroomList( notification.getBody() as Request );
+					break;
+				}
+			}
+			
+			public function set iconType(value:int):void
+			{
+				_iconType = value;
+				if ( value == 1 ) _icon = icon1;
+				else if ( value == 2 ) _icon = icon2;
+				else _icon = icon3;
+			}
+			
+			public function set title(value:String):void
+			{
+				_title = value;
+			}
+			
+			private function rs_getQnaList( request:Request ):void
+			{
+				if ( _iconType != 1 ) return;
+				if(request.result is Array) board_ac = new ArrayCollection(request.result as Array);
+				else board_ac = request.result as ArrayCollection;
+				
+				createBoardList();
+		 	}
+		 	
+		 	private function rs_getKnowledgeList( request:Request ):void
+			{
+				if ( _iconType != 2 ) return;
+				if(request.result is Array) board_ac = new ArrayCollection(request.result as Array);
+				else board_ac = request.result as ArrayCollection;
+				
+				createBoardList();
+		 	}
+		 	
+		 	private function rs_getFileroomList( request:Request ):void
+			{
+				if ( _iconType != 3 ) return;
+				if(request.result is Array) board_ac = new ArrayCollection(request.result as Array);
+				else board_ac = request.result as ArrayCollection;
+				
+				createBoardList();
+		 	}			
+			
+			private function createBoardList():void
+			{
+				if ( board_ac.length > 0 )
+				{
+					for( var i:int; i<board_ac.length; i++)
+					{
+						var board:Label_BoardList = new Label_BoardList();
+						board.title = BoardInfo(board_ac.getItemAt(i)).title;
+						board.addEventListener(MouseEvent.CLICK, clickHandler);
+						board_box.addChild(board);
+					}
+				}
+				else
+				{
+					var temp:Label_BoardList = new Label_BoardList();
+					temp.title = "등록된 " + _title + "이(가) 없습니다.";
+					board_box.addChild(temp);
+				}
+			}
+			
+			private function clickHandler(event:MouseEvent):void
+			{
+				
+			}
+			
+			private function moreClickHandler():void
+			{
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed(source='assets/main/board/bg_board.png')"/>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="4">
+		<mx:HBox width="100%" horizontalGap="5" verticalAlign="middle" paddingLeft="10" paddingTop="1">
+			<mx:Image source="{_icon}"/>
+			<mx:Label width="100%" text="{_title}" styleName="boardTitleLabel"/>
+		</mx:HBox>
+		<mx:VBox id="board_box" width="100%" height="100%" paddingLeft="10" verticalGap="0"/>
+	</mx:VBox>
+	
+	<mx:Button x="290" y="5" buttonMode="true"
+			   overSkin="@Embed(source='assets/main/board/icon_more.png')"
+			   upSkin="@Embed(source='assets/main/board/icon_more.png')"
+			   downSkin="@Embed(source='assets/main/board/icon_more.png')"
+			   click="moreClickHandler();"/>
+			   
+</XCanvas>

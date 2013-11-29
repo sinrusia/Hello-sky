@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XPopup xmlns="com.wemb.tobit.pure.view.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:panels="com.wemb.tobit.components.panels.*"
+	xmlns:main="com.wemb.tobit.components.main.*"
+	width="430" height="335"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	fontSize="12"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.wemb.tobit.vo.UserInfo;
+			import flash.system.fscommand;
+			import mx.utils.StringUtil;
+			
+			import mx.events.ValidationResultEvent;
+			import com.wemb.tobit.core.ApplicationConfig;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;		
+			import mx.formatters.Formatter;		
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import org.puremvc.as3.interfaces.INotification;
+			import com.wemb.tobit.vo.Request;
+			import com.wemb.tobit.pure.Constants;
+		
+			public var cbFunction:Function;
+			
+			private var isRegister:Boolean = false;
+			private var isComplete:Boolean = false;
+			
+	        private var vResult:ValidationResultEvent;
+	        
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			
+			private function onStart():void
+			{
+				if ( isRegister && isComplete )
+				{
+					userId.text = ApplicationConfig.getInstance().userInfo.userId;
+					userName.text = ApplicationConfig.getInstance().userInfo.userName;
+					userCompany.text = ApplicationConfig.getInstance().userInfo.companyName;
+					userDept.text = ApplicationConfig.getInstance().userInfo.deptName;
+					emailInput.text = ApplicationConfig.getInstance().userInfo.email;
+					phoneInput.text = ApplicationConfig.getInstance().userInfo.telephone;
+					mobileInput.text = ApplicationConfig.getInstance().userInfo.mobile;
+				}
+			}
+			
+			override public function listNotificationInterests():Array
+			{
+				return [
+						Constants.SET_USER_INFO
+				];
+			}
+			
+			override public function handleNotification(notification:INotification):void
+			{
+				switch(notification.getName())
+				{
+					case Constants.SET_USER_INFO:
+						rs_setUserInfo(notification.getBody() as Request);
+					break;
+				}
+			}
+	
+			private function closeEvent():void
+			{
+				closeBtnEvent();
+			}
+			
+			private function submit():void
+	  		{
+	  			vResult = pnVHome.validate();  			
+	            if (vResult.type == ValidationResultEvent.INVALID) return;
+	    
+	            vResult = pnVCell.validate();
+	            if (vResult.type == ValidationResultEvent.INVALID) return;
+	
+	            vResult = emV.validate();
+	            if (vResult.type == ValidationResultEvent.INVALID) return;
+	            
+	        	if ( StringUtil.trim(emailInput.text) != ApplicationConfig.getInstance().userInfo.email ||
+					 StringUtil.trim(phoneInput.text) != ApplicationConfig.getInstance().userInfo.telephone ||
+					 StringUtil.trim(mobileInput.text) != ApplicationConfig.getInstance().userInfo.mobile )
+				{
+					var userInfo:UserInfo = new UserInfo();
+					userInfo.email = StringUtil.trim(emailInput.text);
+					userInfo.telephone = StringUtil.trim(phoneInput.text);
+					userInfo.mobile = StringUtil.trim(mobileInput.text);
+					userInfo.userId = ApplicationConfig.getInstance().userInfo.userId;
+					
+					facade.sendTobitService(Constants.SET_USER_INFO, {userInfo:userInfo}, false); 
+				}
+				else
+				{
+					Alert.show("저장되었습니다.", "알림");
+				}
+			}
+			
+			private function rs_setUserInfo( request:Request ):void
+			{
+				var result:int = Number(request.result);
+				if( result > 0 ) 
+				{
+					var param:Object = new Object();
+					param.user_id = ApplicationConfig.getInstance().userInfo.userId;
+					param.company = ApplicationConfig.getInstance().userInfo.companyCode;
+					
+					facade.sendTobitService(Constants.GET_USER_INFO, param, false);
+					
+					Alert.show( "저장되었습니다.", "알림");
+				}
+				else Alert.show("저장에 실패했습니다.", "알림");
+		 	}
+
+		]]>
+	</mx:Script>
+	
+	<panels:TobitPopup width="100%" height="100%" title="개인 정보 설정">
+		
+		<mx:VBox width="100%" height="100%" paddingTop="15"
+			paddingBottom="0" paddingLeft="0" paddingRight="0">
+			
+			<mx:VBox width="100%" height="100%"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off"
+				borderColor="#B5B5B5" borderStyle="solid" borderThickness="1" cornerRadius="10" 
+				backgroundColor="#ffffff"
+				paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"
+				verticalGap="0" horizontalGap="0">
+				
+		       <mx:VBox width="100%" height="100%" horizontalScrollPolicy="off"
+		       		paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+		       		<mx:HBox width="100%" horizontalGap="4">
+		       			<main:Label_UserInfo width="75" text="아이디"/>
+			            <mx:Label id="userId" width="100%"/>
+			        </mx:HBox>
+		       		<mx:HBox width="100%" horizontalGap="4">
+		       			<main:Label_UserInfo width="75" text="이름"/>
+			            <mx:Label id="userName" width="100%"/>
+			        </mx:HBox>
+			        <mx:HBox width="100%" horizontalGap="4">
+			        	<main:Label_UserInfo width="75" text="회사"/>
+			            <mx:Label id="userCompany" width="100%"/>
+			        </mx:HBox>
+			        <mx:HBox width="100%" horizontalGap="4">
+			        	<main:Label_UserInfo width="75" text="소속"/>
+			            <mx:Label id="userDept" width="100%"/>
+			        </mx:HBox>
+			        <mx:HBox width="100%" horizontalGap="4">
+			        	<main:Label_UserInfo width="75" text="이메일" required="true"/>
+			            <mx:TextInput id="emailInput" width="100%"/>
+			        </mx:HBox>
+			        <mx:HBox width="100%" horizontalGap="4">
+			        	<main:Label_UserInfo width="75" text="전화번호" required="true"/>
+			            <mx:TextInput id="phoneInput" width="100%"/>
+			        </mx:HBox>
+			        <mx:HBox width="100%" horizontalGap="4">
+			        	<main:Label_UserInfo width="75" text="휴대전화" required="true"/>
+			            <mx:TextInput id="mobileInput" width="100%"/>
+			        </mx:HBox>
+			    </mx:VBox>
+				
+			</mx:VBox>
+			
+		</mx:VBox>
+		
+		<mx:HBox width="100%" horizontalAlign="right" horizontalGap="5">
+			<mx:Button label="수정" buttonMode="true" click="submit()"/>
+			<mx:Button label="취소" buttonMode="true" click="closeBtnEvent()"/>
+		</mx:HBox>
+		
+	</panels:TobitPopup>
+	
+	<mx:PhoneNumberValidator id="pnVHome" source="{phoneInput}" property="text"
+		requiredFieldError="전화번호를 입력하세요." />
+    <mx:PhoneNumberValidator id="pnVCell" source="{mobileInput}" property="text"
+    	requiredFieldError="휴대전화를 입력하세요."/>
+    <mx:EmailValidator id="emV" source="{emailInput}" property="text"
+    	requiredFieldError="이메일을 입력하세요." />
+
+
+</XPopup>

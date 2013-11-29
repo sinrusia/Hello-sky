@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import caurina.transitions.Tweener;
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			
+			private var moveIdx:Number = 9999;		// 메인 플래시 이동 인덱스 ( 3으로 나눠서 체크)
+			private var direction:String;				
+			private var leftTarget:Canvas;
+			private var centerTarget:Canvas;
+			private var rightTarget:Canvas;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					
+				}
+			}
+			
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					//Constants.SERVER_TIME,							
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				/* if(request.pageName != this.name)
+					return; */
+				
+				switch( command )
+				{	
+					/* case Constants.SERVER_TIME:				
+						rs_serverTime( notification.getBody() as Request );
+					break;	 */
+				}
+			}
+			
+			/**
+			 * 메인 플래시에서 왼쪽 버튼 클릭 시
+			 * 
+			 * 1. 메인 플래시 오른쪽 방향으로 회전
+			 * 2. 선택한 메뉴가 가운데로
+			 */
+			private function moveHandler(event:*):void
+			{
+				direction = event.direction;
+				
+				if ( direction == "left" )
+				{
+					if ( moveIdx%3 == 0 )	// 서비스요청에서 운영현황으로
+					{
+						leftTarget = contents1_box;
+						centerTarget = contents2_box;
+						rightTarget	= contents0_box;
+					}
+					else if ( moveIdx%3 == 1 )	// 운영현황에서 프로세스운영으로
+					{
+						leftTarget = contents0_box;
+						centerTarget = contents1_box;
+						rightTarget	= contents2_box;
+					}
+					else if ( moveIdx%3 == 2 )	// 프로세스운영에서 서비스요청으로
+					{
+						leftTarget = contents2_box;
+						centerTarget = contents0_box;
+						rightTarget	= contents1_box;
+					}
+					moveIdx++;
+				}
+				else
+				{
+					if ( moveIdx%3 == 0 )	// 서비스요청에서 프로세스운영으로
+					{
+						leftTarget = contents0_box;
+						centerTarget = contents1_box;
+						rightTarget	= contents2_box;
+					}
+					else if ( moveIdx%3 == 1 )	// 운영현황에서 서비스요청으로
+					{
+						leftTarget = contents2_box;
+						centerTarget = contents0_box;
+						rightTarget	= contents1_box;
+					}
+					else if ( moveIdx%3 == 2 )	// 프로세스운영에서 운영현황으로
+					{						
+						leftTarget = contents1_box;
+						centerTarget = contents2_box;
+						rightTarget	= contents0_box;
+					}
+					moveIdx--;
+				}
+				
+				moveStart(leftTarget, centerTarget, rightTarget);
+			}
+			
+			private function moveStart(leftTarget:Canvas, centerTarget:Canvas, rightTarget:Canvas):void
+			{
+				leftOnComplete();
+				centerOnComplete();
+				rightOnComplete();
+				Tweener.addTween(leftTarget, {x:0, y:225, scaleX:0, scaleY:0, alpha:0, time:ns.value, transition:combo2.selectedLabel, onComplete:leftOnComplete});
+				Tweener.addTween(centerTarget, {x:0, y:0, scaleX:1, scaleY:1, alpha:1, time:ns.value, transition:combo1.selectedLabel, onComplete:centerOnComplete});
+				Tweener.addTween(rightTarget, {x:1200, y:225, scaleX:0, scaleY:0, alpha:0, time:ns.value, transition:combo2.selectedLabel, onComplete:rightOnComplete});
+				
+				var target:* = centerTarget.getChildAt(0);
+				target.startMovie();
+			}
+			
+			private function leftOnComplete():void
+			{
+				Tweener.removeTweens(leftTarget, "x", "y", "scaleX", "scaleY", "alpha");
+			}
+			private function centerOnComplete():void
+			{
+				Tweener.removeTweens(centerTarget, "x", "y", "scaleX", "scaleY", "alpha");
+			}
+			private function rightOnComplete():void
+			{
+				Tweener.removeTweens(rightTarget, "x", "y", "scaleX", "scaleY", "alpha");
+			}
+			
+			
+			[Bindable]private var transitions_a:Array = ["easeoutquad","easeinoutquad","easeoutinquad",
+														 "easeincubic","easeoutcubic","easeinoutcubic","easeoutincubic",
+														 "easeinquart","easeoutquart","easeinoutquart","easeoutinquart",
+														 "easeinquint","easeoutquint","easeinoutquint","easeoutinquint",
+														 "easeinsine","easeoutsine","easeinoutsine","easeoutinsine",
+														 "easeincirc","easeoutcirc","easeinoutcirc","easeoutincirc",
+														 "easeinexpo","easeoutexpo","easeinoutexpo","easeoutinexpo",
+														 "easeinelastic","easeoutelastic","easeinoutelastic","easeoutinelastic",
+														 "easeinback","easeoutback","easeinoutback","easeoutinback",
+														 "easeinbounce","easeoutbounce","easeinoutbounce","easeoutinbounce"]
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="contents0_box">
+		<tobit:MainContents0 id="contents0" clickEvent="moveHandler(event)"/>
+	</mx:Canvas>
+	<mx:Canvas id="contents1_box" x="1200" y="225" scaleX="0" scaleY="0" alpha="0">
+		<tobit:MainContents1 id="contents1" clickEvent="moveHandler(event)"/>
+	</mx:Canvas>
+	<mx:Canvas id="contents2_box" x="0" y="225" scaleX="0" scaleY="0" alpha="0">
+		<tobit:MainContents2 id="contents2" clickEvent="moveHandler(event)"/>
+	</mx:Canvas>
+	
+	<mx:HBox width="100%" y="97" verticalAlign="middle" horizontalAlign="right">
+		<mx:Label text="Effect In :" fontWeight="bold" color="#666666"/>
+		<mx:ComboBox id="combo1" dataProvider="{transitions_a}" rowCount="10"/>
+		<mx:Spacer width="20"/>
+		<mx:Label text="Effect Out :" fontWeight="bold" color="#666666"/>
+		<mx:ComboBox id="combo2" dataProvider="{transitions_a}" rowCount="10"/>
+		<mx:Spacer width="20"/>
+		<mx:Label text="Effect Time :" fontWeight="bold" color="#666666"/>
+		<mx:NumericStepper id="ns" value="0.5" minimum="0.1" maximum="2" stepSize="0.1"/>
+	</mx:HBox>
+	
+</XCanvas>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:main="com.wemb.tobit.components.main.*"
+	width="100%" height="100%" borderColor="#B5B5B5" borderStyle="solid" borderThickness="1" cornerRadius="10" 
+	backgroundColor="#ffffff"
+	paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="5"
+	verticalGap="0" horizontalGap="0"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Metadata>
+		[Event(name="workPlanChange", type="flash.events.Event")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.events.CloseEvent;
+			import mx.core.IFlexDisplayObject;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]private var _title:String = "";
+			private var _category:String;
+			[Bindable]private var menu_ac:ArrayCollection;
+			private var _checkHeight:int = 23;
+			private var _menuArr:Array;
+			
+			public function set title(value:String):void
+			{
+				_title = value;
+			}
+			
+			public function set category(value:String):void
+			{
+				_category = value;
+			}
+			
+			public function set menuArr(value:Array):void
+			{
+				_menuArr = value;
+			}
+						
+			public function set dataProvider(value:ArrayCollection):void
+			{
+				if ( value )
+				{
+					menu_ac = new ArrayCollection();
+					for( var i:int=0; i<value.length; i++)
+					{
+						for( var j:int=0; j<value[i].children.length; j++)
+						{							
+							menu_ac.addItem({id:value[i].children[j].id, name:value[i].children[j].menuName, selected:selectedCheck(value[i].children[j].id)});
+						}
+					}
+					
+					setTileSize();
+				}
+			}
+			
+			private function selectedCheck(id:String):Boolean
+			{
+				for ( var i:int=0; i<_menuArr.length; i++)
+				{
+					if ( id == _menuArr[i].id ) return true;
+				}
+				return false;
+			}
+			
+			private function setTileSize():void
+			{
+				if ( tile && menu_ac )
+				{
+					if ( _category == "MENU01" ) 
+					{
+						tile.width = 130;
+						/* if ( menu_ac.length > 6 )
+						{
+							tile.height = Math.ceil(menu_ac.length)*_checkHeight + 10;
+						} */
+					}
+					else if ( _category == "MENU02" ) 
+					{
+						tile.width = 350;
+						/* if ( menu_ac.length > 18 )
+						{
+							tile.height = Math.ceil(menu_ac.length/3)*_checkHeight + 10;
+						} */
+					}
+					else if ( _category == "MENU03" )
+					{
+						tile.width = 240;
+						/* if ( menu_ac.length > 12 )
+						{
+							tile.height = Math.ceil(menu_ac.length/2)*_checkHeight + 10;
+						} */
+					}
+					else if ( _category == "MENU04" )
+					{
+						tile.width = 240;
+						/* if ( menu_ac.length > 12 )
+						{
+							tile.height = Math.ceil(menu_ac.length/2)*_checkHeight + 10;
+						} */
+					}
+					
+					//tileRep.dataProvider = menu_ac;
+				}
+			}
+			
+			public function selectedMenu():ArrayCollection
+			{
+				var check_ac:ArrayCollection = new ArrayCollection();
+				for( var i:int; i<menu_ac.length; i++)
+				{
+					if ( menu_ckb[i].selected )
+					{
+						check_ac.addItem(menu_ac.getItemAt(i));
+					}
+				}
+				return check_ac;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label width="100%" textAlign="center" text="{_title}" styleName="myMenuTitleLabel"/> 
+	
+	<mx:HBox width="100%" paddingLeft="10" paddingRight="10">
+		<mx:HRule width="100%" height="1" strokeColor="#D7D7D7"/>	
+	</mx:HBox>
+		
+	<mx:Tile id="tile" height="100%" paddingLeft="10" paddingRight="10" paddingBottom="5" paddingTop="5" verticalGap="0" horizontalGap="0"
+		creationComplete="setTileSize()" direction="vertical"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Repeater width="100%" id="tileRep" dataProvider="{menu_ac}">
+			<main:TobitCheckBox id="menu_ckb" label="{tileRep.currentItem.name}"
+				buttonMode="true" width="110" selected="{tileRep.currentItem.selected}"/>
+		</mx:Repeater>
+	</mx:Tile>
+
+</mx:VBox>

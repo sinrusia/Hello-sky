@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.wemb.tobit.vo.WorkingInfo;
+			import mx.core.Application;
+
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			import popups.WorkCalender;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			private var work_ac:ArrayCollection;
+			private var popup:WorkCalender;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					
+				}
+			}
+			
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					Constants.GET_TODAYWORK_LIST							
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				if( request.param.body != "portal" ) return;
+				
+				switch( command )
+				{	
+					case Constants.GET_TODAYWORK_LIST:				
+						rs_getTodayWorkList( notification.getBody() as Request );
+					break;
+				}
+			}
+			
+			private function rs_getTodayWorkList( request:Request ):void
+			{
+				if(request.result is Array) work_ac = new ArrayCollection(request.result as Array);
+				else work_ac = request.result as ArrayCollection;
+				
+				createWorkList();
+		 	}
+		 	
+		 	private function createWorkList():void
+			{
+				if ( work_ac.length > 0 )
+				{
+					for( var i:int; i<work_ac.length; i++)
+					{
+						var work:Label_TodayWorkList = new Label_TodayWorkList();
+						work.percentWidth = 100;
+						work.workId = WorkingInfo(work_ac.getItemAt(i)).id;
+						var startdate:String = WorkingInfo(work_ac.getItemAt(i)).startDate;
+						var enddate:String = WorkingInfo(work_ac.getItemAt(i)).endDate;
+						work.title = "[" + startdate.substr(8,2) + ":" + startdate.substr(10,2) + "~" + 
+									enddate.substr(8,2) + ":" + enddate.substr(10,2) + "] " + 
+									WorkingInfo(work_ac.getItemAt(i)).title;
+						work.addEventListener(MouseEvent.CLICK, showCalender);
+						list_box.addChild(work);
+					}
+				}
+				else
+				{
+					var temp:Label_TodayWorkList = new Label_TodayWorkList();
+					temp.title = "작업 내역이 없습니다.";
+					list_box.addChild(temp);
+				}
+			}
+			
+			private function showCalender(event:MouseEvent):void
+			{
+				showCalenderHandler(2, event.currentTarget.workId);
+			}
+			
+			private function showCalenderHandler(value:int, workId:String=null):void
+			{
+				// 0 : 캘린더, 1:등록, 2:상세보기
+				
+				if ( popup == null )
+				{
+					popup = WorkCalender(PopUpManager.createPopUp(Application.application as DisplayObject, WorkCalender));
+					//popup.idx = value;
+					popup.workId = workId;
+					var p:Point = this.localToGlobal(new Point(mouseX, mouseY));
+					popup.x = p.x - 280;
+					popup.y = p.y-6;
+					popup.addEventListener(CloseEvent.CLOSE, function ():void{
+						popup = null;
+					});
+				}
+				else
+				{
+					//popup.idx = value; 
+					popup.workId = workId;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:HBox width="100%" >
+			<main:Label_MainTitle title="금일 작업 목록"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button width="14" height="14" buttonMode="true" click="showCalenderHandler(0)" toolTip="작업 캘린더"
+				styleName="calenderBtn"/>
+		</mx:HBox>
+		<mx:VBox id="list_box" width="100%" height="70" paddingLeft="10" paddingTop="5" verticalGap="-2"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			backgroundImage="@Embed(source='assets/main/bg_worktoday.png')" backgroundSize="100%"/>
+	</mx:VBox>
+	
+</XCanvas>

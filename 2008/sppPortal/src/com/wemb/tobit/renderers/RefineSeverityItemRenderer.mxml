@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="mx.controls.listClasses.IDropInListItemRenderer"
+	width="100%" horizontalAlign="center" verticalAlign="middle" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+		
+		[Embed(source="assets/severity/critical.png")]	
+		private var critical:Class;
+		  		
+		[Embed(source="assets/severity/major.png")]
+		private var major:Class;
+		
+		[Embed(source="assets/severity/minor.png")]	
+		private var minor:Class;
+		
+		[Embed(source="assets/severity/warning.png")]
+		private var warning:Class;
+		
+		[Embed(source="assets/severity/normal.png")]
+		private var normal:Class;
+		
+		import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+		import mx.controls.listClasses.BaseListData;
+		import mx.controls.AdvancedDataGrid;
+		import mx.controls.dataGridClasses.DataGridListData;
+		
+		private var _severity:String;
+		private var field:String;
+		private var _listData:BaseListData;
+		
+		public function set listData(value:BaseListData):void
+	   	{
+	    	_listData = value;
+	   	}   
+		
+		public function get listData():BaseListData
+	   	{
+	  		return _listData;
+	   	}
+
+		override public function set data(value:Object):void
+		{
+			super.data = value;												
+			if(value)
+			{				
+				if ( this.owner is AdvancedDataGrid )
+					field = AdvancedDataGridListData(listData).dataField;
+				else
+					field = DataGridListData(listData).dataField;
+		    	
+		    	_severity = data[field];
+		    	 
+		    	switch(_severity)
+	    		{
+	    			case null:
+	    			case "":
+	    				img.source = null;
+	    				break;
+	    			case "critical":
+	    				img.source = critical;
+	    				break;
+	    			case "major":
+	    				img.source = major;
+	    				break;
+	    			case "minor":
+	    				img.source = minor;
+	    				break;
+	    			case "warning":
+	    				img.source = warning;
+	    				break;
+	    			case "normal":
+	    				img.source = normal;
+	    				break;
+	    		}
+			}
+		}
+													
+		]]>
+	</mx:Script>
+		
+	<mx:Image id="img" scaleContent="false" maintainAspectRatio="true" visible="true"/>
+	
+</mx:HBox>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2012 WeMB INC. 
+// All Rights Reserved.
+//
+//	@auther			: jaehag
+//	@description 	:
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600">
+	
+</mx:Application>

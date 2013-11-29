@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	horizontalScrollPolicy="off" resize="resizeHandler(event)" borderStyle="solid" 
+	borderColor="0xacacac" 
+	>
+	<mx:Script>
+		<![CDATA[
+			import mx.core.BitmapAsset;
+			import mx.events.ResizeEvent;
+			[Embed(source="/assets/common/pattern_chart.png")] 
+			[Bindable] 
+			public var chartPattern:Class;
+			    
+			private var bit_bg:BitmapAsset =  new chartPattern()as BitmapAsset;
+						
+			private function resizeHandler(event:ResizeEvent):void{   
+				event.currentTarget.graphics.clear();   
+				event.currentTarget.graphics.beginBitmapFill(bit_bg.bitmapData);   
+				event.currentTarget.graphics.drawRect(0,0,event.currentTarget.width, event.currentTarget.height);   
+				event.currentTarget.graphics.endFill();   
+			}    	
+		]]>
+	</mx:Script>
+</mx:Canvas>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2012 WeMB INC. 
+// All Rights Reserved.
+//
+//	@auther			: jaehag
+//	@description 	:
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   click="application1_clickHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.graphics.SolidColor;
+			import mx.graphics.SolidColorStroke;
+			
+			import spark.core.SpriteVisualElement;
+			import spark.primitives.Path;
+			
+			private var poligon:Path;
+			
+			private var poligonPoints:Array;
+			
+			private var isEnd:Boolean = false;
+			
+			/*
+			TobitComponent 상속
+			TobitComponent -> TobitPoligon
+				- path
+			
+			TobitComponent -> TobitFormComponent
+			TobitComponett -> TobitLine
+			*/
+			protected function application1_clickHandler(event:MouseEvent):void
+			{
+				if (!isEnd) {
+					var d:String = "";
+					
+					if (!poligonPoints) {
+						poligonPoints = new Array();
+					}
+					
+					
+					
+					if (!poligon) {
+						poligon = new Path();
+						poligon.stroke = new SolidColorStroke(0x000000);
+						poligon.fill = new SolidColor(0xEFEFEF);
+						this.addElement(poligon);
+						d = "M " + this.mouseX + " " + this.mouseY;
+					} else {
+						
+						if (event.target is SpriteVisualElement) {
+							d = poligon.data;
+							d += " Z";
+							isEnd = true;
+						} else {
+							d = poligon.data;
+							d += " L " + this.mouseX + " " + this.mouseY;
+						}
+						
+					}
+					
+					if(!isEnd) {
+						var point:SpriteVisualElement = new SpriteVisualElement();
+						point.addEventListener(MouseEvent.MOUSE_DOWN, pointDownHandler);
+						point.width = 6;
+						point.height = 6;
+						point.graphics.beginFill(0x000000);
+						point.graphics.drawCircle(0, 0, 3);
+						point.x = this.mouseX;
+						point.y = this.mouseY;
+						this.addElement(point);
+						poligonPoints.push(point);
+					}
+					
+					poligon.data = d;
+				}
+
+			}
+			
+			protected function pointDownHandler(event:MouseEvent):void
+			{
+				if(isEnd) {
+					event.currentTarget.startDrag();
+					if(!this.hasEventListener(Event.ENTER_FRAME)) {
+						event.currentTarget.addEventListener(MouseEvent.MOUSE_UP, pointUpHandler);
+						this.addEventListener(Event.ENTER_FRAME, drawLine);
+					}
+				}
+			}
+			
+			protected function pointUpHandler(event:MouseEvent):void
+			{
+				if(isEnd) {
+					event.currentTarget.stopDrag();
+					this.removeEventListener(Event.ENTER_FRAME, drawLine);
+					event.currentTarget.removeEventListener(MouseEvent.MOUSE_UP, pointUpHandler);
+				}
+			}
+			
+			protected function drawLine(event:Event):void {
+				if(isEnd) {
+					var d:String = "M " + poligonPoints[0].x + " " + poligonPoints[0].y;
+					for (var i:int = 1; i < poligonPoints.length; i++) {
+						d += " L " + poligonPoints[i].x + " " + poligonPoints[i].y;
+					}
+					d += " Z";
+					poligon.data = d;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+</s:Application>

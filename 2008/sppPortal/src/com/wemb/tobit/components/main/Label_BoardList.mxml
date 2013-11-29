@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" verticalAlign="middle"
+	horizontalGap="5">
+
+	<mx:Script>
+		<![CDATA[
+		
+		[Bindable]private var _title:String = "";		
+		public function set title(value:String):void
+		{
+			if ( value != null )
+			{
+				_title = value;
+			}
+		}
+		
+		private function rollOverHandler():void
+		{
+			lb.styleName = "boardOverLabel";
+		}
+		private function rollOutHandler():void
+		{
+			lb.styleName = "boardUpLabel";
+		}
+		
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed(source='assets/main/board/bullet_board.png')"/>
+	<mx:Label id="lb" width="100%" text="{_title}" styleName="boardUpLabel"
+		buttonMode="true" mouseChildren="false" rollOver="rollOverHandler()" rollOut="rollOutHandler();"/>
+	
+</mx:HBox>

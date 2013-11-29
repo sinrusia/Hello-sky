@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%" 
+	xmlns:charts="com.wemb.tobit.components.charts.*" xmlns:common="screens.common.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			//-----------------------------------------------------------
+			//
+			// Variables
+			//
+			//-----------------------------------------------------------
+			private var _dataProvider:ArrayCollection;
+			
+			private var dataChanged:Boolean;
+			
+			//Chart Config
+			[Bindable]
+			public var displayName:String = "";
+			
+			[Bindable]
+			public var xField:String = "stime";
+			
+			[Bindable]
+			public var yField:String = "data";
+			
+			[Bindable]
+			public var title:String = "";
+			
+			[Bindable]
+			public var lastTime:String = "-";
+			
+			[Bindable]
+			public var lastValue:String = "-1";
+			
+			//-----------------------------------------------------------
+			//
+			// Functions
+			//
+			//-----------------------------------------------------------
+			
+			//-----------------------------------------------------------
+			//
+			// Override
+			//
+			//-----------------------------------------------------------
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if( dataChanged )
+				{
+					dataChanged = false;
+				}
+			}
+			//-----------------------------------------------------------
+			//
+			// Setter / Getter
+			//
+			//-----------------------------------------------------------
+			public function set dataProvider( value:ArrayCollection ):void
+			{
+				this._dataProvider = value;
+				
+				dataChanged = true;
+				invalidateProperties();
+			}
+			
+			[Bindable]
+			public function get dataProvider():ArrayCollection
+			{
+				return this._dataProvider;
+			}
+		]]>
+	</mx:Script>
+	
+	<common:SubTitle title="{title}"/>
+	
+	<mx:HBox width="100%" height="100%"
+		horizontalAlign="center" verticalAlign="middle">
+		
+		<mx:ViewStack id="vs" width="100%" height="100%">
+		
+			<charts:HLineChart label="Line" dataProvider="{dataProvider}" 
+				xField="{xField}" yField="{yField}" cColor="{cp.selectedColor}"/>
+				
+			<charts:HColumnChart label="Column" dataProvider="{dataProvider}" 
+				xField="{xField}" yField="{yField}" cColor="{cp.selectedColor}"/>
+				
+		</mx:ViewStack>
+		
+		<common:DoubleBorderCanvas width="130" height="100%">
+			
+			<mx:VBox width="100%" height="100%"
+				verticalGap="10"
+				horizontalAlign="center" verticalAlign="top">
+				
+				<common:DoubleBorderCanvas width="100%" height="50">
+					<mx:Label text="{title}" width="100%" textAlign="center"/>
+				</common:DoubleBorderCanvas>
+				
+				<mx:Label text="{lastTime}" width="100%" textAlign="center"/>
+				
+				<mx:Label text="{lastValue}" width="100%" textAlign="center"/>
+				
+				<mx:HBox width="100%" height="30" 
+					horizontalAlign="center" verticalAlign="middle" horizontalGap="10">
+					
+					<mx:Label text="챠트 색"/>
+					<mx:ColorPicker id="cp" width="50"/>
+					
+				</mx:HBox>
+				
+				<mx:ToggleButtonBar dataProvider="{vs}"/>
+			
+			</mx:VBox>			
+			
+		</common:DoubleBorderCanvas>
+		
+	</mx:HBox>
+	
+</mx:VBox>

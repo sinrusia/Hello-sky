@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" horizontalScrollPolicy="off">
+   	
+   	<mx:Script>
+        <![CDATA[
+        	import mx.controls.listClasses.BaseListData;
+            public var result:String="";
+            
+            // Override the set method for the data property.
+            override public function set data(value:Object):void 
+            {
+                super.data = value;
+                if (value != null) 
+                {
+                    var currentValue:String = value.refine_msg_grp;
+                    var len:int = parentDocument.messageGroup_ac.length;
+                    cb.selectedIndex = 0;
+                    var index:Number = -1;
+                    for (var i:int = 0; i < len; i++)
+                    {
+                        if (parentDocument.messageGroup_ac[i].message_group == currentValue) 
+                        {
+                            cb.selectedIndex = i;
+                            index = i;
+                            break;
+                        }
+                    }
+                    if(index < 0){
+                    	/* data.message_group = "All";
+                    	data.object = "All"; */
+                    }
+                    try{	
+	                    result = cb.selectedItem.message_group;
+	                } catch(err:Error){}
+                }
+            } 
+            
+            override public function get data():Object {
+                return super.data;
+            }	            
+            
+            public function onChange():void 
+            {
+            	if(cb.selectedItem)
+            	{
+	            	result = cb.selectedItem.message_group;
+	            	data.refine_msg_grp = result;		// change 이벤트가 발생하고 값을 변경해주지 않으면 한 박자씩 느리게 반영되므로
+	            	/* if(data.message_group == "All"){
+	            		data.object = "All";
+	            	} */
+	            }
+            }                
+        ]]>
+    </mx:Script>
+    
+	<mx:ComboBox change="onChange()" id="cb" rowCount="10" width="100%" 
+		dataProvider="{parentDocument.messageGroup_ac}" labelField="message_group"/>
+</mx:Canvas>
+

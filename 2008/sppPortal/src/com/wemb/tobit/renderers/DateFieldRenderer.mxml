@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DateField xmlns:mx="http://www.adobe.com/2006/mxml" 
+	yearNavigationEnabled="true" formatString="YYYY-MM-DD" 
+	dayNames="['일', '월', '화', '수', '목', '금', '토']" 
+	monthSymbol="월" 
+	monthNames="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" 
+	yearSymbol="년" dateChooserStyleName="date-chooser" 
+	change="dateChanged()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.wemb.tobit.utils.Util;
+			import mx.controls.Alert;
+			import mx.utils.StringUtil;
+			
+			public var result:String="";
+			
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.dataGridClasses.DataGridListData;
+			
+			private var _listData:DataGridListData;
+			
+			override public function get listData():BaseListData
+			{
+				return _listData;
+			}
+			
+			override public function set listData(value:BaseListData):void
+			{
+				_listData = DataGridListData(value);
+			}
+
+            override public function get data():Object 
+            {
+                return super.data;
+            }
+
+            override public function set data(value:Object):void 
+            {
+            	super.data = value;
+            	var str:String = data[_listData.dataField];
+                //text = data[_listData.dataField];
+                selectedDate = new Date(str.substr(0,4), Number(str.substr(4,2))-1, str.substr(6,2));
+                result = str;
+            }
+			
+			private function dateChanged():void 
+			{
+				result = (text).substr(0,4)+(text).substr(5,2)+(text).substr(8,2);
+				data[_listData.dataField] = result;
+				
+				/* if(StringUtil.trim(data.s_date) != "" && 
+					StringUtil.trim(data.e_date) != "" &&
+					Number(Util.getData(data.s_date)) > Number(Util.getData(data.e_date)))
+				{
+					Alert.show("시작일이 종료일보다 늦습니다.", "알림");
+					result = "";
+					data[_listData.dataField] = "";
+					df.text = "";
+				}  
+				else if(StringUtil.trim(data.s_date) != "" && 
+					StringUtil.trim(data.e_date) != "" &&
+					Number(Util.getData(data.s_date)) == Number(Util.getData(data.e_date)))
+				{
+					if(StringUtil.trim(data.s_time).length == 6 &&
+						StringUtil.trim(data.e_time).length == 6 &&
+						Number(data.s_time) > Number(data.e_time))
+					{
+						Alert.show("시간시간이 종료시간보다 늦습니다.", "알림");
+						result = "";
+						data[_listData.dataField] = "";
+						df.text = "";
+					}
+				} */
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:DateField>
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+		
+		[Bindable]private var _selected:Boolean = false;		
+		public function set selected(value:Boolean):void
+		{
+			_selected = value;
+		}
+		
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="img1" source="@Embed(source='assets/main/notice_over.png')" visible="{_selected}"/>
+	
+	<mx:Image id="img2" source="@Embed(source='assets/main/notice_disable.png')" visible="{!_selected}"/>
+	
+</mx:Canvas>

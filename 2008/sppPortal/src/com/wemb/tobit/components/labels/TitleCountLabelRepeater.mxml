@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:labels="com.wemb.tobit.components.labels.*"
+	verticalGap="2" 
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			//-----------------------------------------------------------------
+	        //
+	        // Variables
+	        //
+	        //-----------------------------------------------------------------
+	        
+	        private var _dataProvider:ArrayCollection;
+	        
+	        private var dataChanged:Boolean;
+	        
+	        private var _fontSizeType:String = "large";
+			
+			private var fontSizeTypeChanged:Boolean;
+			
+			[Bindable]
+			public var valueFlag:Boolean = false;
+			
+			/**
+			 * Bar Chart 와 색을 맞추기 위해
+			 */
+			[Bindable]
+			private var colorArr:ArrayCollection = 
+				new ArrayCollection([ 0xc13100, 0x901296, 0xaa7c00, 0x348f11 ]);
+			
+			//-----------------------------------------------------------------
+	        //
+	        // Override
+	        //
+	        //-----------------------------------------------------------------
+	        override protected function commitProperties():void
+	        {
+	        	super.commitProperties();
+	        	
+	        	if( dataChanged )
+	        	{
+	        		dataChanged = false;
+	        		
+	        		try
+	        		{
+	        			comp1.dataProvider = dataProvider[0];
+	        			comp2.dataProvider = dataProvider[1];
+	        			comp3.dataProvider = dataProvider[2];
+	        			comp4.dataProvider = dataProvider[3];
+	        		}
+	        		catch(error:Error)
+	        		{
+	        			trace( "TitleCountLabelRepeater Error:", error.message );
+	        		}
+	        	}
+	        	
+	        	if( fontSizeTypeChanged )
+				{
+					fontSizeTypeChanged = false;
+				}
+	        }
+	        
+			//-----------------------------------------------------------------
+	        //
+	        // Setter / Getter
+	        //
+	        //-----------------------------------------------------------------
+	        public function set dataProvider( value:ArrayCollection ):void
+	        {
+	        	this._dataProvider = value;
+	        	
+	        	dataChanged = true;
+	        	invalidateProperties();
+	        }
+	        
+	        [Bindable]
+	        public function get dataProvider():ArrayCollection
+	        {
+	        	return this._dataProvider;
+	        }
+	        
+	        [Inspectable(enumeration="small, large")]
+			public function set fontSizeType( value:String ):void
+			{
+				if( this._fontSizeType != value )
+				{
+					this._fontSizeType = value;
+					
+					fontSizeTypeChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			[Bindable]
+			public function get fontSizeType():String
+			{
+				return this._fontSizeType;
+			}
+		]]>
+	</mx:Script>
+	
+	<labels:TitleCountLabel id="comp1"
+		titleColor="{colorArr[0]}"
+		valueFlag="{valueFlag}"
+		fontSizeType="{fontSizeType}"/>
+		
+	<labels:TitleCountLabel id="comp2"
+		titleColor="{colorArr[1]}"
+		valueFlag="{valueFlag}"
+		fontSizeType="{fontSizeType}"/>
+		
+	<labels:TitleCountLabel id="comp3"
+		titleColor="{colorArr[2]}"
+		valueFlag="{valueFlag}"
+		fontSizeType="{fontSizeType}"/>
+		
+	<labels:TitleCountLabel id="comp4"
+		titleColor="{colorArr[3]}"
+		valueFlag="{valueFlag}"
+		fontSizeType="{fontSizeType}"/>
+		
+</mx:VBox>

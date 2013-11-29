@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2012 WeMB INC. 
+// All Rights Reserved.
+//
+//	@auther			: jaehag
+//	@description 	:
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="955" minHeight="600"
+			   creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var mu:Number = 0;
+				
+				var p1:XYZPoint = new XYZPoint();
+				
+				var p2:XYZPoint = new XYZPoint();
+				
+				var p3:XYZPoint = new XYZPoint();
+				
+				var p4:XYZPoint = new XYZPoint();
+				
+				p1.x = 100;
+				p1.y = 150;
+				
+				p2.x = 200;
+				p2.y = 0;
+				
+				p3.x = 300;
+				p3.y = 300;
+				
+				p4.x = 400;
+				p4.y = 150;
+				
+				layer.graphics.clear();
+				layer.graphics.lineStyle(1, 0, 1);
+				layer.graphics.moveTo(p1.x, p1.y);
+				
+				while (mu <= 1) {
+					var p:XYZPoint = bezier(p1, p2, p3, mu);
+					layer.graphics.lineTo(p.x, p.y);
+					
+					mu += 0.001;
+				}
+				
+				mu = 0;
+				layer.graphics.moveTo(p1.x, p1.y);
+				while (mu <= 1) {
+					var pp:XYZPoint = bezier4(p1, p2, p3, p4, mu);
+					layer.graphics.lineTo(pp.x, pp.y);
+					
+					mu += 0.001;
+				}
+				
+				layer.graphics.endFill();
+				
+				
+				
+			}
+			
+			private function bezier(p1:XYZPoint, p2:XYZPoint, p3:XYZPoint, mu:Number):XYZPoint {
+				var mum1:Number;
+				var mum12:Number;
+				var mu2:Number;
+				
+				var p:XYZPoint = new XYZPoint();
+				
+				mu2 = mu * mu;
+				
+				mum1 = 1 - mu;
+				
+				mum12 = mum1 * mum1;
+				
+				p.x = p1.x * mum12 + 2 * p2.x * mum1 * mu + p3.x * mu2;
+				p.y = p1.y * mum12 + 2 * p2.y * mum1 * mu + p3.y * mu2;
+				p.z = p1.z * mum12 + 2 * p2.z * mum1 * mu + p3.z * mu2;
+				
+				return p;
+			}
+			
+			
+			/*
+			조절점이 4개인 베지어 곡선 예제
+			mu는 0(곡선의 시작)부터 1(곡선의 끝) 사이의 값을 가질 수 있습니다.
+			*/
+			private function bezier4(p1:XYZPoint, p2:XYZPoint, p3:XYZPoint, p4:XYZPoint,mu:Number):XYZPoint
+			{
+				var mum1:Number;
+				var mum13:Number;
+				var mu3:Number;
+				
+				var p:XYZPoint = new XYZPoint();
+				mum1 = 1 - mu;
+				mum13 = mum1 * mum1 * mum1;
+				mu3 = mu * mu * mu;
+				p.x = mum13 * p1.x + 3 * mu * mum1 * mum1 * p2.x + 3 * mu * mu * mum1 * p3.x + mu3 * p4.x;
+				p.y = mum13 * p1.y + 3 * mu * mum1 * mum1 * p2.y + 3 * mu * mu * mum1 * p3.y + mu3 * p4.y;
+				p.z = mum13 * p1.z + 3 * mu * mum1 * mum1 * p2.z + 3 * mu * mu * mum1 * p3.z + mu3 * p4.z;
+				return p;
+			}
+				
+			
+		]]>
+	</fx:Script>
+	
+	<mx:Box id="layer"/>
+	
+</s:Application>

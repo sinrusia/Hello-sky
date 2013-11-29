@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="70"
+	xmlns:main="com.wemb.tobit.components.main.*"
+	backgroundColor="#ffffff" backgroundImage=""
+	verticalAlign="middle" horizontalAlign="center" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	initialize="onInitialize()">
+		
+	<mx:Script>
+		<![CDATA[
+			
+			import com.wemb.tobit.pure.ApplicationFacade;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.utils.VersionInfo;
+			import mx.controls.Button;
+			
+			/**
+			 * Facade instance 생성
+			 */
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
+			
+			private function onInitialize():void
+			{
+				//PureMVC 패턴을 시작한다.
+				facade.startup(this);
+				
+				// 어플리케이션 스타일시트 로딩
+				StyleManager.loadStyleDeclarations("assets/css/tobit.swf");
+				ExternalInterface.addCallback("sendToActionScript", receivedFromJavaScript);
+			}
+			
+			private function onComplete():void
+			{
+				facade.sendTobitService(Constants.SERVER_TIME);
+								
+				// 프로젝트 버전 정보
+				new VersionInfo();
+				
+				// init ContextMenu
+				var contextMenu:ContextMenu = new ContextMenu();
+				contextMenu.hideBuiltInItems();
+				this.contextMenu = contextMenu;
+			}
+			
+			/*********************************************************************
+			// html에서 데이터를 받으면 파싱해서 사용
+			**********************************************************************/
+			private function receivedFromJavaScript(value:String):void 
+			{
+				var tempA:Array = value.split("|");
+				setBoolean(topnavi.menu1_btn, tempA[0]);
+				setBoolean(topnavi.menu2_btn, tempA[1]);
+				setBoolean(topnavi.menu3_btn, tempA[2]);
+				setBoolean(topnavi.menu4_btn, tempA[3]);
+			}
+			
+			private function setBoolean(target:Button, value:String):void
+			{
+				if ( value == "true" ) 
+				{
+					target.enabled = true;
+					target.buttonMode = true;
+				}else
+				{
+					target.enabled = false;
+					target.buttonMode = false;
+				}
+			}
+
+		]]>
+	</mx:Script>
+	
+	<main:Main_TopNavigate id="topnavi" width="100%" height="70" pageType="xeniview" creationComplete="onComplete()"/>
+	
+</mx:Application>

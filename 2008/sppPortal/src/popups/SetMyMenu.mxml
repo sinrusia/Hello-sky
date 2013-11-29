@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XPopup xmlns="com.wemb.tobit.pure.view.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:panels="com.wemb.tobit.components.panels.*"
+	xmlns:main="com.wemb.tobit.components.main.*"
+	width="1065" height="350"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	fontSize="12"
+	creationComplete="onComplete()">	
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import com.wemb.tobit.vo.MenuInfo;
+			import com.wemb.tobit.components.main.Renderer_MyMenuBox;
+			import com.wemb.tobit.core.ApplicationConfig;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.formatters.Formatter;		
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import org.puremvc.as3.interfaces.INotification;
+			import com.wemb.tobit.vo.Request;
+			import com.wemb.tobit.pure.Constants;
+			
+			public var cbFunction:Function;
+			
+			private var isRegister:Boolean = false;
+			private var isComplete:Boolean = false;
+			private var _menuArr:Array;
+			
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			
+			private function onStart():void
+			{
+				if ( isRegister && isComplete )
+				{
+					createMenu();
+				}
+			}
+			
+			override public function listNotificationInterests():Array
+			{
+				return [
+						Constants.SET_MYMENU_MODIFY
+				];
+			}
+			
+			override public function handleNotification(notification:INotification):void
+			{
+				switch(notification.getName())
+				{
+					case Constants.SET_MYMENU_MODIFY:
+						rs_setMyMenuModify(notification.getBody() as Request);
+					break;
+				}
+			}
+	
+			private function closeEvent():void
+			{
+				closeBtnEvent();
+			}
+			
+			public function set selectedMenu(arr:Array):void
+			{
+				_menuArr = arr;
+			}
+	
+	  		private function rs_setMyMenuModify(request:Request):void
+			{
+				var result:int = Number(request.result);
+				if( result > 0 ) 
+				{
+					var param:Object = new Object();
+					param.user_id = ApplicationConfig.getInstance().userInfo.userId;
+					param.company = ApplicationConfig.getInstance().userInfo.companyCode;
+					
+					facade.sendTobitService(Constants.GET_MYMENU_LIST, param, false);
+					
+					Alert.show( "저장되었습니다.", "알림");
+				}
+				else Alert.show("저장에 실패했습니다.", "알림");
+			}
+	  		
+	  		private function createMenu():void
+	  		{
+	  			var temp_ac:ArrayCollection = new ArrayCollection(ApplicationConfig.getInstance().menuList);
+	  			
+	  			for( var i:int; i<temp_ac.length; i++)
+	  			{
+	  				var box:Renderer_MyMenuBox = new Renderer_MyMenuBox();
+	  				box.title = temp_ac[i].menuName;
+	  				box.menuArr = _menuArr;
+	  				box.category = temp_ac[i].menuCategory;
+	  				box.dataProvider = new ArrayCollection(temp_ac[i].children);  				
+	  				hbox.addChild(box);
+	  			}
+	  		}
+	  		
+	  		private function submit():void
+	  		{
+	  			var menu1:ArrayCollection = Renderer_MyMenuBox(hbox.getChildAt(0)).selectedMenu();
+	  			var menu2:ArrayCollection = Renderer_MyMenuBox(hbox.getChildAt(1)).selectedMenu();
+	  			var menu3:ArrayCollection = Renderer_MyMenuBox(hbox.getChildAt(2)).selectedMenu();
+	  			var menu4:ArrayCollection = Renderer_MyMenuBox(hbox.getChildAt(3)).selectedMenu();
+	  			
+	  			if ( menu1.length + menu2.length + menu3.length + menu4.length > 5 )
+	  			{
+	  				Alert.show("최대 5개까지 선택 가능합니다.", "알림");
+	  			}
+	  			else
+	  			{
+	  				var insert_ac:ArrayCollection = new ArrayCollection();
+	  				var userId:String = ApplicationConfig.getInstance().userInfo.userId;
+	  				var menuinfo:MenuInfo;
+	  				
+	  				for( var i:int=0; i<menu1.length; i++)
+	  				{
+	  					menuinfo = new MenuInfo();
+	  					menuinfo.userId = userId;
+	  					menuinfo.id = menu1.getItemAt(i).id;
+	  					insert_ac.addItem(menuinfo);
+	  				}
+	  				for( i=0; i<menu2.length; i++)
+	  				{
+	  					menuinfo = new MenuInfo();
+	  					menuinfo.userId = userId;
+	  					menuinfo.id = menu2.getItemAt(i).id;
+	  					insert_ac.addItem(menuinfo);
+	  				}
+	  				for( i=0; i<menu3.length; i++)
+	  				{
+	  					menuinfo = new MenuInfo();
+	  					menuinfo.userId = userId;
+	  					menuinfo.id = menu3.getItemAt(i).id;
+	  					insert_ac.addItem(menuinfo);
+	  				}
+	  				for( i=0; i<menu4.length; i++)
+	  				{
+	  					menuinfo = new MenuInfo();
+	  					menuinfo.userId = userId;
+	  					menuinfo.id = menu4.getItemAt(i).id;
+	  					insert_ac.addItem(menuinfo);
+	  				}
+	  				
+	  				var param:Object = new Object();
+	  				param.insertMap = insert_ac;
+	  				param.userId = userId;
+	
+					facade.sendTobitService(Constants.SET_MYMENU_MODIFY, param, false);
+	  			}
+	  		}
+
+		]]>
+	</mx:Script>
+	
+	<panels:TobitPopup width="100%" height="100%" title="마이 메뉴 설정 (최대 5개)">
+	
+	<mx:HBox id="hbox" width="100%" height="100%" paddingTop="15"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off" horizontalGap="10"/>
+		
+	<mx:HBox width="100%" horizontalAlign="right" horizontalGap="5">
+		<mx:Button label="저장" buttonMode="true" click="submit()"/>
+		<mx:Button label="취소" buttonMode="true" click="closeBtnEvent()"/>
+	</mx:HBox>
+	
+	</panels:TobitPopup>
+	
+</XPopup>

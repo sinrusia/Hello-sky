@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="TOBIT_EditMode" default="TOBIT" basedir=".">
+	
+	<!-- sdk 루트 -->
+	<property name="flexSDK.dir" location="C:\Program Files\Adobe\Flex Builder 3\sdks\3.1.0"/>
+	
+	<!-- asdoc.exe 경로 -->
+	<property name="asDocs.dir" location="${flexSDK.dir}\bin\asdoc.exe"/>
+	
+	<!-- sdk library 경로(하나이상의 라이브러리를 포함시키려면, 경로에 한글, 공백이 있으면 안된다. -->
+	<property name="asDoc.libs" location="D:\sdks\3.1.0\frameworks\libs"/>
+	
+	<!-- ASDOC를 만들  파일 경로 -->
+	<property name="appClasses.dir" location=".\src"/>
+	<property name="appClasses.path" location=".\src"/>
+	
+	<!-- documents home -->
+	<property name="doc.dir" value="D:\WorkSpace\2009\flex\TOBIT_GS_PureMVC_DEV\docs"/>
+	<!-- 출력 디렉토리 -->
+	<property name="output.dir" location="${doc.dir}\api"/>
+
+	<!-- 외부 라이브러리 경로 -->
+	<property name="external.libs" location=".\libs"/>
+
+	
+	<target name="TOBIT" depends="compile" description="TOBIT GS docs">
+		<echo>
+			Building TOBIT GS Source Documentation
+		</echo>
+	</target>
+	
+    <target name="compile">
+		<!--
+    	<delete>
+    	    <fileset 
+    	        dir="${output.dir}" 
+    	        defaultexcludes="no"
+    	        includes="**/*~"
+    	    />
+    	 </delete>
+    	-->
+    	<delete dir="${output.dir}" failonerror="false" includeemptydirs="true"/>
+		<mkdir dir="${output.dir}"/>
+		
+    	<!-- asdoc.exe 실행 -->
+		<exec executable="${asDocs.dir}">
+			<!-- arguments -->
+			<arg line="-source-path ${appClasses.dir}"/>
+			<arg line="-doc-sources ${appClasses.path}"/>
+			
+			<!-- 라이브러리 등록 -->
+			<arg line="-library-path ${external.libs} ${asDoc.libs}"/>
+			
+			<!-- 브라우져 TITLE -->
+			<arg line="-window-title 'TOBIT GS API'"/>
+			<!-- 문서 상단 노출 -->
+			<arg line="-main-title 'TOBIT'"/>
+			<!-- 문서 하단 노출 -->
+			<arg line="-footer '&#169; 2004-2009 WeMB Incorporated. All rights reserved.'"/>
+			
+			<arg line="-output ${output.dir}"/>
+			<arg line="-left-frameset-width 280"/>
+		</exec>
+	</target>
+	
+</project>

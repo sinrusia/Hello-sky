@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" verticalAlign="middle"
+	horizontalGap="5">
+
+	<mx:Script>
+		<![CDATA[
+		
+		[Bindable]private var _title:String = "";		
+		public function set title(value:String):void
+		{
+			if ( value != null )
+			{
+				_title = value;
+			}
+		}
+		
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed(source='assets/main/bullet_maintitle.png')"/>
+	<mx:Label id="lb" width="100%" text="{_title}" styleName="mainTitleLabel"/>
+	
+</mx:HBox>

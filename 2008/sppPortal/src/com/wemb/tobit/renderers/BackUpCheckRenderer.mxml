@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="mx.controls.listClasses.IDropInListItemRenderer"
+	width="100%" horizontalAlign="center" verticalAlign="middle" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+		
+			
+		import mx.controls.AdvancedDataGrid;
+		import mx.controls.dataGridClasses.DataGridListData;
+		import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+		import mx.controls.listClasses.BaseListData;
+		
+		[Bindable]private var _label:String = "정상";
+		private var field:String;
+		private var _listData:BaseListData;
+		
+		public function set listData(value:BaseListData):void
+	   	{
+	    	_listData = value;
+	   	} 
+		
+		public function get listData():BaseListData
+	   	{
+	  		return _listData;
+	   	}
+
+		override public function set data(value:Object):void
+		{
+			super.data = value;											
+			if(value)
+			{
+				if ( this.owner is AdvancedDataGrid )
+					field = AdvancedDataGridListData(listData).dataField;
+				else
+					field = DataGridListData(listData).dataField;
+					
+				if ( Number(data[field]) == 0) 
+				{
+					_label = "정상";
+					linkbutton.setStyle("color", 0x009900);
+					
+				}
+				else if ( Number(data[field]) == 1)
+				{
+					_label = "주의";
+					linkbutton.setStyle("color", 0xd9a609);
+					linkbutton.buttonMode = true;
+				} 
+				else if ( Number(data[field]) == 2)
+				{
+					_label = "비정상";
+					linkbutton.setStyle("color", 0xFF2045);
+					linkbutton.buttonMode = true;
+				}
+				else 
+				{
+					_label = "-";
+					linkbutton.setStyle("color", 0xcccccc);
+					
+				}
+			}
+		}
+		
+		private function clickHandler():void
+		{
+			/* var event:JogiDetailEvent = new JogiDetailEvent(JogiDetailEvent.JOGI_DETAIL_EVENT, true);
+ 			event.gid = data.gid;
+ 			event.part = field;
+ 			event.jogi_type = field;
+ 			event.jogiObj = data;
+ 			try{
+	 			event.fullname = data[field+"fullname"];
+	 		} catch(err:Error){}
+ 			event.host_name = data.host_name;
+ 			event.checkdate = data[field+"checkdate"];
+ 			event.stime = data[field+"stime"];
+ 			if(_label == "주의" || _label == "비정상"){
+				this.owner.dispatchEvent(event);
+ 			} */
+		}						
+		]]>
+	</mx:Script>
+	<mx:Label id="linkbutton" text="{_label}" fontFamily="Yoon 윤고딕 540_TT" fontWeight="bold" 
+		click="clickHandler();" buttonMode="false" mouseChildren="false" />
+</mx:HBox>

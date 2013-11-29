@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import popups.SetUserInfo
+			import mx.core.Application;
+
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					
+				}
+			}
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					//Constants.SERVER_TIME,							
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				/* if(request.pageName != this.name)
+					return; */
+				
+				switch( command )
+				{	
+					/* case Constants.SERVER_TIME:				
+						rs_serverTime( notification.getBody() as Request );
+					break;	 */
+				}
+			}
+			
+			private function setUserClickHandler():void
+			{
+				var popup:SetUserInfo = SetUserInfo(PopUpManager.createPopUp(Application.application as DisplayObject, SetUserInfo));
+				var p:Point = this.localToGlobal(new Point(mouseX, mouseY));
+				popup.x = p.x - 165;
+				popup.y = p.y - 8;
+				//PopUpManager.centerPopUp(popup as IFlexDisplayObject);
+				//popup.cbFunction = cbAddFunction;
+				popup.addEventListener(CloseEvent.CLOSE, function ():void{
+					popup = null;
+				});
+			}			
+			
+		]]>
+	</mx:Script>	
+					
+	<mx:Image source="@Embed(source='assets/main/bg_info.png')"/>
+	
+	<mx:HBox x="42" y="6" width="100%" horizontalGap="0">
+		<mx:Label text="{ApplicationConfig.getInstance().userInfo.userName}" styleName="userNameLabel"/>
+		<mx:Label text="님" styleName="userNameLabel" fontWeight="normal"/>
+	</mx:HBox>
+		
+	<mx:VBox x="50" y="31" width="100%" verticalGap="-3">
+		<mx:Label width="100%" text="{ApplicationConfig.getInstance().userInfo.companyName}" styleName="userInfoLabel"/>
+		<mx:Label width="100%" text="{ApplicationConfig.getInstance().userInfo.deptName}" styleName="userInfoLabel"/>	
+	</mx:VBox>
+	
+	<mx:Button x="125" y="8" buttonMode="true" click="setUserClickHandler()"
+		       overSkin="@Embed(source='assets/main/btn_user.png')"
+			   upSkin="@Embed(source='assets/main/btn_user.png')"
+			   downSkin="@Embed(source='assets/main/btn_user.png')"/>
+</XCanvas>

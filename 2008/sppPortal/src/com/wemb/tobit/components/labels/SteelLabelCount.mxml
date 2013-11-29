@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+	width="256" height="65"
+	backgroundImage="@Embed('./assets/scrn03/risk_glass_panel.png')" 
+	xmlns:labels="com.wemb.tobit.components.labels.*">
+	
+	<mx:Script>
+		<![CDATA[
+			//---------------------------------------------------------
+			//
+			// Variables
+			//
+			//---------------------------------------------------------
+			
+			private var _title:String = "XXXXXX";
+			
+			private var titleChanged:Boolean;
+			
+			private var _count:Number = -1;
+			
+			private var countChanged:Boolean;
+			
+			private var _color:Number;
+			
+			private var colorChanged:Boolean;
+			
+			private var _unit:String = "건";
+			
+			private var unitChanged:Boolean;
+			
+			//---------------------------------------------------------
+			//
+			// Override
+			//
+			//---------------------------------------------------------
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if( titleChanged )
+				{
+					titleChanged = false;
+					
+					titleLabel.text = title;
+				}
+				
+				if( countChanged )
+				{
+					countChanged = false;
+					
+					try{
+						countLabel.text = count.toString();
+					}catch( error:Error ){
+						trace( "countChanged: ", count, error.message );
+						countLabel.text = "-1";
+					}
+				}
+				
+				if( unitChanged )
+				{
+					unitChanged = false;
+					
+					unitLabel.text = unit;
+				}
+				
+				if( colorChanged )
+				{
+					colorChanged = false;
+					
+					titleLabel.setStyle( "color", color );
+				}
+			}
+			
+			//---------------------------------------------------------
+			//
+			// Setter / Getter
+			//
+			//---------------------------------------------------------
+			
+			public function set title( value:String ):void
+			{
+				if( this._title != value )
+				{
+					this._title = value;
+					
+					titleChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			public function get title():String
+			{
+				return this._title;
+			}
+			
+			public function set count( value:Number ):void
+			{
+				if( this._count != value )
+				{
+					this._count = value;
+					
+					countChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			public function get count():Number
+			{
+				return this._count;
+			}
+			
+			public function set unit( value:String ):void
+			{
+				if( this._unit != value )
+				{
+					this._unit = value;
+					
+					unitChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			[Bindable]
+			public function get unit():String
+			{
+				return this._unit;
+			}
+			
+			public function set color( value:Number ):void
+			{
+				if( this._color != value )
+				{
+					this._color = value;
+
+					colorChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			public function get color():Number
+			{
+				return this._color;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:NumberFormatter id="nf" useThousandsSeparator="true"/>
+	
+	<mx:Box width="95" height="100%"
+		verticalAlign="middle" horizontalAlign="center"
+		paddingLeft="10"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		
+		<mx:Label id="titleLabel" width="100%" textAlign="center"
+			styleName="trafficLabel" fontSize="20" selectable="false"
+			paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
+	</mx:Box>
+	
+	<labels:BlinkLabel id="countLabel" width="98" x="110" y="16"
+		styleName="trafficValueLarge"/>
+	
+	<mx:Label id="unitLabel" width="40" x="220" y="22"
+		text="{unit}" textAlign="left"
+		styleName="trafficUnit"/>
+	
+</mx:Canvas>

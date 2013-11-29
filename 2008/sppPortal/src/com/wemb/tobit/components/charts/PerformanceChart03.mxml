@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns="com.wemb.tobit.view.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:common="com.wemb.tobit.components.common.*"
+	width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	horizontalAlign="center" verticalAlign="middle">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ResizeEvent;
+			import mx.core.UIComponent;
+			import mx.core.BitmapAsset;
+			import mx.charts.series.LineSeries;
+			import mx.charts.HitData;
+			import mx.charts.CategoryAxis;
+			import mx.charts.chartClasses.IAxis;
+			import mx.collections.ArrayCollection;
+			
+			//--------------------------------------------------------
+			//
+			// Variables
+			//
+			//--------------------------------------------------------
+			
+			[Embed(source="/assets/chart/bg_chartpt01_main.png")] 
+			[Bindable] 
+			public var chartPattern:Class;    
+			private var bit_bg:BitmapAsset =  new chartPattern()as BitmapAsset;   
+  
+			[Embed(source="/assets/chart/bg_chartpt02_main.png")] 
+			[Bindable]
+			public var chartPatternOther:Class;    
+			private var bit_bg1:BitmapAsset =  new chartPatternOther()as BitmapAsset;   
+			
+			[Bindable]
+			public var maximum:Number = NaN;
+			
+			[Bindable]
+			public var showLine2:Boolean = false;
+			
+			[Bindable]
+			public var line1DisplayName:String = "";
+			
+			[Bindable]
+			public var line2DisplayName:String = "";
+			
+			[Bindable]
+			public var title:String;
+			
+			/**
+			 * Chart Data
+			 * 
+			 */
+			private var _dataProvider:ArrayCollection;
+			
+			/**
+			 * y Field
+			 * 
+			 */
+			private var _yField:String;
+			
+			/**
+			 * y Field
+			 * 
+			 */
+			private var _yField2:String;
+			
+			/**
+			 * 
+			 * 
+			 */
+			private var yFieldChanged:Boolean;
+			
+			
+			/**
+			 * 
+			 * 
+			 */
+			private var _lineColor:Number = 0xf7941d;
+			
+			/**
+			 * 
+			 * 
+			 */
+			private var lineColorChanged:Boolean;
+			
+			//--------------------------------------------------------
+			//
+			// Override
+			//
+			//--------------------------------------------------------
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if( yFieldChanged )
+				{
+					yFieldChanged = false;
+				}
+				
+				if( lineColorChanged )
+				{
+					
+				}
+			}
+
+			//--------------------------------------------------------
+			//
+			// Functions
+			//
+			//--------------------------------------------------------
+			public function msgFunc( value:int ):void
+			{
+				//if( value == 0 )	e_msg.visible = true;
+				//else				e_msg.visible = false;
+			}
+			
+			
+			public function lbFunction(cat:Object, pcat:Object, ax:CategoryAxis,catItem:Object):String
+			{				
+				if( cat == "" )	return "";
+				
+				var strLb:String = cat as String;
+				if( strLb =="null" || strLb == null )	return "";
+				
+				return strLb.substr( 11, 5);				 
+			}		
+			
+			
+            private function linearAxis_labelFunc(item:Object, prevValue:Object, axis:IAxis):String 
+            {
+               	try
+               	{
+               		if( Number(item) < 1 ) 	return nFmt.format(item);
+		            else					return nFmt.format(item);
+               	}
+               	catch( error:Error )
+               	{
+               		trace( "linearAxis_labelFunc: ", error.message );
+               	}
+               	return "";
+            }
+            
+			private function resize(target:UIComponent, bg:BitmapAsset):void
+			{   
+				target.graphics.clear();
+				target.graphics.beginBitmapFill(bg.bitmapData);
+				target.graphics.drawRect(0,0,target.width, bg_box.height);
+				target.graphics.endFill();
+			}
+			
+            private function resizeHandler(event:ResizeEvent):void
+            {   
+            	box.width = bg_box.width;
+             	resize(box, bit_bg1);
+            }
+			
+			//--------------------------------------------------------
+			//
+			// Setter / Getter
+			//
+			//--------------------------------------------------------
+			public function set dataProvider( value:ArrayCollection ):void
+			{
+				_dataProvider = value;
+				
+				if(_dataProvider){
+					msgFunc( this._dataProvider.length );
+				}
+			}
+			
+			[Bindable]
+			public function get dataProvider():ArrayCollection
+			{
+				
+				return this._dataProvider;
+			}
+			
+			public function set yField( value:String ):void
+			{
+				this._yField = value;
+				yFieldChanged = true;
+				invalidateProperties();
+				invalidateDisplayList();
+			}
+			
+			[Bindable]
+			public function get yField():String
+			{
+				return this._yField;
+			}
+			
+			
+			public function set yField2( value:String ):void
+			{
+				this._yField2 = value;
+				this.showLine2 = true;
+				yFieldChanged = true;
+				invalidateProperties();
+				invalidateDisplayList();
+			}
+			
+			[Bindable]
+			public function get yField2():String
+			{
+				return this._yField2;
+			}
+			
+			public function set lineColor( value:Number ):void
+			{
+				this._lineColor = value;
+				
+				lineColorChanged = true;
+				invalidateProperties();
+			}
+			
+			[Bindable]
+			public function get lineColor():Number
+			{
+				return this._lineColor;
+			}
+  		]]>
+  	</mx:Script>
+  	
+	<mx:NumberFormatter id="nFmt" useThousandsSeparator="true"/>
+	
+    <mx:SeriesInterpolate id="interp"
+        elementOffset="0"
+        duration="300"
+        minimumElementDuration="0"/>
+    
+    <mx:Canvas width="100%" height="28">
+    	<mx:Image source="@Embed(source='/assets/bg/infra/performance_title bg.png')"/>
+    	<mx:Label id="lblTitle" text="{title}" styleName="AssetInfoTitle" width="100%" top="3"/>
+    </mx:Canvas>
+	
+	<mx:LineChart id="linechart" width="100%" height="100%"
+        showDataTips="true" styleName="PerformanceChart" dataProvider="{dataProvider}"
+        paddingRight="10">  
+    	
+		<mx:backgroundElements>
+		
+			<mx:HBox id="bg_box" width="100%" height="100%" 
+				verticalScrollPolicy="off" horizontalScrollPolicy="off" 
+				horizontalGap="0" resize="resizeHandler(event)"
+				borderStyle="solid" borderColor="#4d4d4d">
+				
+				<mx:Box height="100%" id="box" horizontalScrollPolicy="off" verticalScrollPolicy="off" horizontalAlign="center" verticalAlign="middle" >
+					
+				</mx:Box>
+				
+			</mx:HBox>    		
+			
+            <mx:GridLines direction="horizontal" horizontalChangeCount="1">
+                <mx:horizontalStroke>
+                    <mx:Stroke color="#4d4d4d" weight="1" />
+                </mx:horizontalStroke>
+            </mx:GridLines>				
+            			 
+        </mx:backgroundElements>
+
+        
+    	<mx:verticalAxis>
+	    	<mx:LinearAxis baseAtZero="true" maximum="{maximum}"
+	    		labelFunction="linearAxis_labelFunc"/>
+	    </mx:verticalAxis>
+	    
+		 <!-- horizontal axis -->
+        <mx:horizontalAxis>
+            <mx:CategoryAxis id="ca"
+            	labelFunction="lbFunction"
+                categoryField="TERM"/>
+        </mx:horizontalAxis>
+
+        <!-- horizontal axis renderer -->
+        <mx:horizontalAxisRenderers>
+            <mx:AxisRenderer axis="{ca}" styleName="myAxisStyle" 
+            	canDropLabels="true">
+                <mx:axisStroke>
+                    <mx:Stroke color="#000000" weight="1"/>
+                </mx:axisStroke>
+           </mx:AxisRenderer>                         
+        </mx:horizontalAxisRenderers>
+
+        <mx:series>
+			<mx:LineSeries  
+				showDataEffect="{interp}"
+				yField="{yField}" form="curve"
+				displayName="{line1DisplayName}">
+            	<mx:lineStroke>
+            		<mx:Stroke color="#FFFF66"  weight="1" />
+            	</mx:lineStroke>	
+				<mx:filters>
+            		<mx:DropShadowFilter distance="1" angle="90" color="#333333" blurY="2" blurX="2" alpha="0.3"/>									        
+				</mx:filters>
+			</mx:LineSeries>
+        </mx:series>
+        
+	</mx:LineChart>  
+	
+</mx:Box>

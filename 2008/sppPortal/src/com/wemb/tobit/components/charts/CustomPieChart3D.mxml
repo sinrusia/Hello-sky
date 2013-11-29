@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:ilog="http://www.ilog.com/2007/ilog/flex"
+	xmlns:charts="com.wemb.tobit.components.charts.*"
+	width="100%" height="100%" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.charts.HitData;
+			import mx.core.UIComponent;
+			import mx.collections.ArrayCollection;
+			
+			//-----------------------------------------------------------------
+	        //
+	        // Variables
+	        //
+	        //-----------------------------------------------------------------
+			private var _dataProvider:ArrayCollection;
+			
+			private var dataChanged:Boolean;
+			
+			/**
+			 * Chart Title
+			 */
+			private var _title:String = "";
+			
+			private var titleChanged:Boolean;
+			
+			private var _isBlackLabel:Boolean = false;
+			
+			private var bgTypeChanged:Boolean;
+
+			//-----------------------------------------------------------------
+	        //
+	        // Functions
+	        //
+	        //-----------------------------------------------------------------
+			private function displayGold(data:Object, field:String, index:Number, percentValue:Number):String
+			{
+	            var temp:String= (" " + percentValue).substr(0,6);
+	            return data.Country + ": " + '\n' + "Total Gold: " + data.Gold + '\n' + temp + "%";
+	        }
+	        
+	        //-----------------------------------------------------------------
+	        //
+	        // Override
+	        //
+	        //-----------------------------------------------------------------
+	        override protected function commitProperties():void
+	        {
+	        	super.commitProperties();
+	        	
+	        	if( dataChanged )
+	        	{
+	        		dataChanged = false;
+	        	}
+	        	
+	        	if( titleChanged )
+	        	{
+	        		titleChanged = false;
+	        		
+	        		//chartLabel.title = title;
+	        		
+	        		//if( title == "" )
+	        		//	chartLabel.visible = false;
+	        		//else
+	        		//	chartLabel.visible = true;
+	        	}
+	        	
+	        	if( bgTypeChanged )
+	        	{
+	        		bgTypeChanged = false;
+	        		
+	        		//chartLabel.isBlackLabel = isBlackLabel;
+	        	}
+	        }
+	        
+	        //-----------------------------------------------------------------
+	        //
+	        // Setter / Getter
+	        //
+	        //-----------------------------------------------------------------
+			public function set dataProvider( value:ArrayCollection ):void
+			{
+				this._dataProvider = value;
+				
+				dataChanged = true;
+				invalidateProperties();
+			}
+			
+			[Bindable]
+			public function get dataProvider():ArrayCollection
+			{
+				return this._dataProvider;
+			}
+			
+			public function set title( value:String ):void
+			{
+				if( this._title != value )
+				{
+					this._title = value;
+					
+					titleChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			public function get title():String
+			{
+				return this._title;
+			}
+			
+			public function set isBlackLabel( value:Boolean ):void
+			{
+				if( this._isBlackLabel != value )
+				{
+					this._isBlackLabel = value;
+					
+					bgTypeChanged = true;
+					invalidateProperties();
+				}
+			}
+			
+			public function get isBlackLabel():Boolean
+			{
+				return this._isBlackLabel;
+			}
+			
+			private function labelFunction(data:Object, field:String, index:Number, percentValue:Number):String {
+				return data.rate + "%";
+			}
+			
+			private function dataTipFunction(hitData:HitData):String{
+				var returnVal:String = "<b>" + hitData.item.name + "</b> : " + hitData.item.rate + "%";
+				
+				return returnVal;
+				
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:SolidColor id="sc1" color="0xf16eaa" alpha="0.9"/>
+    <mx:SolidColor id="sc2" color="0xf8941d" alpha="0.9"/>
+    <mx:SolidColor id="sc3" color="0xffff00" alpha="0.9"/>
+    <mx:SolidColor id="sc4" color="0x8dc73f" alpha="0.9"/>
+    <mx:SolidColor id="sc5" color="0x00bff3" alpha="0.9"/>
+	<mx:SolidColor id="sc6" color="0xFFCCFF" alpha="0.9"/>
+	<mx:SolidColor id="sc7" color="0xFF00FF" alpha="0.9"/>
+	<mx:SolidColor id="sc8" color="0xFF6699" alpha="0.9"/>
+	<mx:SolidColor id="sc9" color="0xFF3366" alpha="0.9"/>
+	<mx:SolidColor id="sc10" color="0xFF0033" alpha="0.9"/>
+	<mx:SolidColor id="sc11" color="0xFFFF66" alpha="0.9"/>
+	<mx:SolidColor id="sc12" color="0xFFCC33" alpha="0.9"/>
+	<mx:SolidColor id="sc13" color="0xFF9900" alpha="0.9"/>
+	<mx:SolidColor id="sc14" color="0xCCFFFF" alpha="0.9"/>
+	<mx:SolidColor id="sc15" color="0xCCCCCC" alpha="0.9"/>
+	<mx:SolidColor id="sc16" color="0xCC9999" alpha="0.9"/>
+	<mx:SolidColor id="sc17" color="0xCC6666" alpha="0.9"/>
+	<mx:SolidColor id="sc18" color="0xCC3333" alpha="0.9"/>
+	<mx:SolidColor id="sc19" color="0x99FFFF" alpha="0.9"/>
+	<mx:SolidColor id="sc20" color="0x9900FF" alpha="0.9"/>
+	<mx:SolidColor id="sc21" color="0x9933CC" alpha="0.9"/>
+	<mx:SolidColor id="sc22" color="0x996699" alpha="0.9"/>
+	<mx:SolidColor id="sc23" color="0x999966" alpha="0.9"/>
+	<mx:SolidColor id="sc24" color="0x00FFFF" alpha="0.9"/>
+	<mx:SolidColor id="sc25" color="0x00CCCC" alpha="0.9"/>
+	<mx:SolidColor id="sc26" color="0x009999" alpha="0.9"/>
+	<mx:SolidColor id="sc27" color="0x006666" alpha="0.9"/>
+	<mx:SolidColor id="sc28" color="0x33FF00" alpha="0.9"/>
+	<mx:SolidColor id="sc29" color="0x33CC33" alpha="0.9"/>
+	<mx:SolidColor id="sc30" color="0x339966" alpha="0.9"/>
+	<mx:SolidColor id="sc31" color="0x336699" alpha="0.9"/>
+	<mx:SolidColor id="sc32" color="0x003300" alpha="0.9"/>
+	<mx:SolidColor id="sc33" color="0x003333" alpha="0.9"/>
+	<mx:SolidColor id="sc34" color="0x003366" alpha="0.9"/>
+	<mx:SolidColor id="sc35" color="0x003399" alpha="0.9"/>
+	
+	<ilog:PieChart3D id="chart"
+		width="100%" height="230" y="-55" horizontalCenter="0"
+		depth="10" 
+		rotationAngle="0" elevationAngle="60"
+		paddingBottom="0"
+		dataProvider="{dataProvider}" 
+		showDataTips="true" dataTipFunction="dataTipFunction">
+	
+		<ilog:series>
+			<ilog:PieSeries3D nameField="xx" field="xx" labelPosition="inside"
+				labelFunction="labelFunction"/>
+			<ilog:PieSeries3D nameField="name" field="rate" labelPosition="inside" 
+				 fills="{[  sc1, sc2, sc3, sc4, sc5, sc6, sc7, sc8, sc9, sc10,
+				 			sc11, sc12, sc13, sc14, sc15, sc16, sc17, sc18, sc19, sc20, 
+				 			sc22, sc22, sc23, sc24, sc25, sc26, sc27, sc28, sc29, sc30, 
+				 			sc31, sc32, sc33, sc34, sc35]}" labelFunction="labelFunction" color="#ffffff" fontSize="12"/>
+		</ilog:series>
+		
+	</ilog:PieChart3D>
+	
+</mx:Canvas>

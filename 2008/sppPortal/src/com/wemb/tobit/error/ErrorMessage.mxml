@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" width="650" height="450"
+	title="에러 Message" styleName="popupPanel"
+	showCloseButton="true" close="removeThis()"
+	paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2"
+	>
+	<!--titleIcon="@Embed(source='/assets/etc/panelIcon.png')"--> 
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+
+			import com.wemb.tobit.events.TobitDataEvent;
+			import com.wemb.tobit.managers.TobitErrorManager;
+			
+			[Bindable]
+			private var confirmText:String
+				= '<TEXTFORMAT LEADING="2"><FONT FACE="Verdana" SIZE="12" COLOR="#CC0000" LETTERSPACING="0" KERNING="0">*<FONT COLOR="#FFFFFF">'
+					+ '확인 버튼을 누르면, 모든 메세지가 삭제됩니다.</FONT></FONT></TEXTFORMAT>';
+			
+			private function removeThis():void
+			{
+				PopUpManager.removePopUp(this);
+				this.dispatchEvent( new TobitDataEvent( TobitDataEvent.ERROR_POPUP_CLOSE ) );
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		backgroundColor="#187853">
+	
+		<mx:DataGrid width="100%" height="100%" 
+			dataProvider="{TobitErrorManager.getInstance().showErrorAC}">
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="시간" width="160" textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox width="100%" height="100%"
+								paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+								horizontalScrollPolicy="off" verticalScrollPolicy="off"
+								horizontalGap="0" horizontalAlign="center" verticalAlign="middle">
+									<mx:Script>
+										<![CDATA[
+											import com.wemb.tobit.vo.TobitError;
+											
+											public override function set data(value:Object):void
+											{
+												if( value != null )
+												{
+													super.data = value;
+													
+													var tempObj:TobitError = value as TobitError;
+													timeLabel.text = df.format(tempObj.errTime);
+												}
+											} 
+										]]>
+									</mx:Script>
+									
+								<mx:DateFormatter id="df" formatString="YY-MM-DD JJ:NN:SS"/>
+								
+								<mx:Image source="@Embed(source='/assets/etc/error.png')"/> 
+								<mx:Label id="timeLabel" textAlign="center"/>
+								
+							</mx:HBox>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				
+				<mx:DataGridColumn headerText="에러 메세지" textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:Label textAlign="left"
+								paddingLeft="5">
+								<mx:Script>
+									<![CDATA[
+										import com.wemb.tobit.vo.TobitError;
+
+										public override function set data(value:Object):void
+										{
+											if( value != null )
+											{
+												super.data = value;
+												
+												var tempObj:TobitError = value as TobitError;
+												this.text = tempObj.errMessage;
+												this.toolTip = tempObj.errMessage;
+											}
+										} 
+									]]>
+								</mx:Script>
+							</mx:Label>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox width="100%" 
+			horizontalAlign="right" verticalAlign="middle">
+			<mx:Text selectable="false"
+				paddingLeft="10"
+				htmlText="{confirmText}" />
+				
+			<mx:Button label="확인" 
+				buttonMode="true" useHandCursor="true" 
+				click="removeThis()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:TitleWindow>

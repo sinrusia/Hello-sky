@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="37" horizontalAlign="center" width="100%" 
+	>
+	<mx:Script>
+		<![CDATA[
+			private var _type:String = "green";
+			[Bindable]
+			private var gVisible:Boolean = true;
+			[Bindable]
+			private var oVisible:Boolean = false;
+			
+			public function set type(__type:String):void{
+				this._type = __type;	
+				gVisible = false;
+				oVisible = false;		
+				if(__type == "green")	
+					gVisible = true;
+				if(__type == "orange")	
+					oVisible = true;
+			}
+			[Bindable]			
+			public function get type():String{
+				return _type;	
+			}			
+			[Bindable]
+			private var _msg:String = "데이터가 존재하지 않습니다.";
+			
+			public function set text(value:String):void{
+				this._msg = value;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox left="10" top="30" right="10" height="100%" width="100%"
+	     backgroundColor="0x1f263a" borderColor="{gVisible==true?0x01a1eb:0xe88919}"
+	     borderStyle="solid" borderThickness="3" cornerRadius="10" 
+	     paddingRight="5" paddingLeft="5"
+	     backgroundAlpha="0.9" 
+	     >
+	     <mx:Canvas>
+	     	<mx:Image y="4" source="@Embed('assets/common/ic_alertBlue.png')" visible="{gVisible}"  />
+	     	<mx:Image y="4" source="@Embed('assets/common/ic_alertOrange.png')" visible="{oVisible}" />
+	     </mx:Canvas>
+	     <mx:Box paddingTop="7">
+		     <mx:Label text="{_msg}" color="#d1d1d1" fontFamily="Yoon 윤고딕 540_TT" fontWeight="bold" />
+	     </mx:Box>
+		<mx:filters> 
+		    <flash.filters:DropShadowFilter id="dropShadowFilter" xmlns:flash.filters="flash.filters.*" 
+		      angle="45"
+		          blurX="22" blurY="22"
+		          distance="4"
+		          alpha="0.4" color="#000000" 
+		          knockout="false" quality="1"
+		          strength="1" inner="false" hideObject="false"/>
+
+		</mx:filters>
+	</mx:HBox>	
+	
+	
+	
+	
+	
+</mx:HBox>

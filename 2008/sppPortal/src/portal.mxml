@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2008 WeMB INC. 
+// All Rights Reserved.
+// 
+//  index.mxml
+//  
+//	@date			:	
+//	@auther		 	:	wemb
+//	@ver			:	
+//	@description 	:	
+//	
+//	information : 
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:main="com.wemb.tobit.components.main.*" xmlns:tobit="*"
+	width="100%" height="820" minWidth="1240" minHeight="820"
+	horizontalAlign="center" horizontalGap="0" verticalGap="0" 
+	backgroundColor="#ffffff" backgroundImage=""
+	initialize="onInitialize()" 
+	creationComplete="onComplete()" >
+
+	<!--
+	 * Copyright (C) 2004-2010 WeMB INC. 
+	 * All Rights Reserved.
+	 *	@date			:	2011-07-01
+	 *	@auther			:	WEMB
+	 *	@ver			:	1.0
+	 *	@description 	: 	ITSM 포털 메인 (TOBIT Application 파일)
+	 *	
+	-->
+	
+	<mx:Metadata>
+    	[ResourceBundle("locale")]
+    </mx:Metadata>
+
+	<mx:Script>  
+		<![CDATA[
+			import com.wemb.tobit.utils.CustomStringUtil;
+			import com.wemb.tobit.utils.Util;
+			import mx.managers.ToolTipManager;
+			
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+						
+			import caurina.transitions.Tweener;
+			import com.wemb.tobit.utils.VersionInfo;
+			import com.wemb.tobit.pure.ApplicationFacade;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.pure.view.PortalMediator;
+			import com.wemb.tobit.events.NaviClickEvent;
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import mx.managers.DragManager;
+			
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance();		// Facade instance 생성
+			[Bindable]private var locales:Array = [ "ko_KR", "en_US" ];		// Locale = 한국어, 영어
+			public var menuArr:Array = new Array();							// 메뉴 리스트
+			private var selectMenuIdx:int = 0;								// 대메뉴 중 선택한 메뉴 인덱스 
+			private var isSubMenu:Boolean = false;	// 서브메뉴가 펼쳐져 있는지 상태
+			
+			[Bindable]public var user_id:String = "shb_user";
+			public var locale:String = "KR";
+			[Bindable]public var company:String = "SHB";
+			
+			/**
+			 * Application 초기화 작업 전인 initialize 시점에 초기화 작업울 수행한다.
+			 * 
+			 * 1. 스타일시트 로딩
+			 * 2. 로케일 설정(한글,영문)
+			 */
+			private function onInitialize():void
+			{
+				//user_id = Application.application.parameters.user_id;
+				//locale = Application.application.parameters.locale;
+				//company = Application.application.parameters.company;
+				
+				//PureMVC 패턴을 시작한다.
+				facade.startup(this);
+				
+				facade.registerMediator(new PortalMediator(this));
+				
+				var param:Object = new Object();
+				param.user_id = user_id;
+				param.company = company;
+				param.body = "portal";
+				
+				facade.sendTobitService(Constants.SERVER_TIME, false);
+				facade.sendTobitService(Constants.GET_USER_INFO, param, false);
+				facade.sendTobitService(Constants.GET_TODAYWORK_LIST, param, false);
+				facade.sendTobitService(Constants.GET_MENU_LIST, param, false);
+				facade.sendTobitService(Constants.GET_MYMENU_LIST, param, false);
+				facade.sendTobitService(Constants.GET_QNA_LIST, param, false);
+				facade.sendTobitService(Constants.GET_KNOWLEDGE_LIST, param, false);
+				facade.sendTobitService(Constants.GET_FILEROOM_LIST, param, false);
+				facade.sendTobitService(Constants.GET_LINKSITE_LIST, param, false);
+								
+				// 어플리케이션 스타일시트 로딩
+				StyleManager.loadStyleDeclarations("assets/css/tobit.swf");
+				
+				DragManager;
+				PopUpManager;
+				
+		        ToolTipManager.showDelay = 0;
+		        ToolTipManager.hideDelay = 3000
+        		
+        		if ( locale == "EN" ) resourceManager.localeChain = ["en_US"];
+        		else resourceManager.localeChain = ["ko_KR"];
+			}
+		
+			/**
+			 * 설정된 로케일 값으로 리턴
+			 */
+			public function getLocaleString(str:String):String 
+			{
+			 	return  resourceManager.getString('locale', str);
+			}
+			
+			/**
+			 * Application 의 모든 자원들이 초기화 된 후에 초기화 작업을 수행한다.
+			 * 
+			 * 1. facade 초기화 작업
+			 * 2. PageManager 초기화
+			 * 3. isLogin체크
+			 */
+			private function onComplete():void
+			{
+				// 프로젝트 버전 정보
+				new VersionInfo();
+				
+				// init ContextMenu
+				var contextMenu:ContextMenu = new ContextMenu();
+				contextMenu.hideBuiltInItems();
+				this.contextMenu = contextMenu;
+				
+				// 서브메뉴가 펼쳐져있을 경우 마우스 다운 이벤트가 발생하면 제거
+				this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			}
+			
+			/**
+			 * 어플리케이션 에서 마운스 다운 이벤트 발생 시
+			 * 
+			 * 1. 서브메뉴가 펼쳐져 있으면 숨기기
+			 * 2. alpha 0
+			 */
+			private function mouseDownHandler(event:MouseEvent):void
+			{
+				if ( !isSubMenu ) return;
+				
+				var p:Point = this.localToGlobal(new Point(mouseX, mouseY));
+				if( !subnavi.hitTestPoint(p.x, p.y) && !topnavi.menu_box.hitTestPoint(p.x, p.y) )
+				{
+					selectMenuIdx = 0;
+					Tweener.addTween(subnavi, { alpha:0, time:1, transition:"easeIn", onComplete:naviHideComplete});
+				}
+			}
+			
+			/**
+			 * 탑네비 클릭  이벤트 발생 시
+			 * 
+			 * 1. 현재 펼쳐진 서브메뉴와 다르면 변경
+			 */
+			private function subMenuShow(event:NaviClickEvent):void
+			{
+				if ( subnavi )
+				{
+					isSubMenu = true;
+					if ( event.index != selectMenuIdx )
+					{
+						if ( event.index == 1 )	subnavi.menuArr = menuArr[0].children as Array;
+						else if ( event.index == 2 ) subnavi.menuArr = menuArr[1].children as Array;
+						else if ( event.index == 3 ) subnavi.menuArr = menuArr[2].children as Array;
+						else if ( event.index == 4 ) subnavi.menuArr = menuArr[3].children as Array;
+						
+						selectMenuIdx = event.index;
+						var posX:Number = event.targetBtn.x + event.targetBtn.parent.parent.x + 237;
+						Tweener.addTween(subnavi, {x:posX, y:event.targetBtn.y+28, scaleY:1, alpha:1, time:.8, transition:"easeOutQuint"});
+					}
+				}
+			}
+			
+			/**
+			 * 서브 메뉴에서  클릭  이벤트 발생시 해당 메뉴로 이동 후 서브 메뉴 감추기
+			 * 
+			 * 1. 선택 메뉴인덱스 0으로 초기화
+			 * 2. alpha 0
+			 */
+			private function subnaviClickHandler():void
+			{
+				selectMenuIdx = 0;
+				Tweener.addTween(subnavi, { alpha:0, time:1, transition:"easeIn", onComplete:naviHideComplete});
+			}
+			
+			/**
+			 * 서브메뉴 숨기기
+			 * 1. y좌표 -200, scaleY 0
+			 */
+			private function naviHideComplete():void
+			{
+				Tweener.removeTweens(subnavi, "alpha");
+				Tweener.addTween(subnavi, { y:-200, scaleY:0, time:.1, transition:"easeIn"});
+				isSubMenu = false;
+			}
+						
+		]]>
+	</mx:Script>
+	
+	<mx:DateFormatter id="df" formatString="YYYY.MM.DD   JJ:NN"/>
+	
+	<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+					
+		<!-- 상단 CI/메뉴/검색 등 -->
+		<main:Main_TopNavigate id="topnavi" width="100%" height="70" pageType="tobit"
+			naviClickEvent="subMenuShow(event)"/>
+			
+		<mx:VBox y="70" width="100%" height="100" verticalGap="0" paddingTop="0" horizontalAlign="center"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			backgroundImage="@Embed(source='assets/main/bg_top.png')" backgroundSize="100%">
+			
+			<mx:HBox width="1180" height="100%" verticalGap="0" paddingTop="0" paddingLeft="72"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				
+				<!-- 개인정보 -->
+				<main:Main_UserInfo width="178"/>
+								
+				<!-- 나의 작업 현황 -->
+				<main:Main_MyWork width="278" height="100%"/>
+				   
+				<main:VRule_Image/>
+				
+				<!-- 작업 목록 -->
+				<mx:HBox width="297" horizontalAlign="center">
+					<main:Main_TodayWork width="267" height="100%"/>
+				</mx:HBox>
+				
+				<main:VRule_Image/>
+				
+				<!-- 미정 -->
+				<mx:HBox width="297" horizontalAlign="center">
+					<main:Main_UnKnown width="270" height="100%"/>
+				</mx:HBox>
+				
+			</mx:HBox>
+			
+		</mx:VBox>
+		
+		<mx:VBox y="170" width="100%" height="594" verticalGap="0" paddingTop="0" horizontalAlign="center"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			backgroundImage="@Embed(source='assets/main/bg_middle.png')" backgroundSize="100%">
+			
+			<!-- 메인 컨텐츠 -->
+			<mx:Canvas height="440">
+				<main:Main_Contents width="1180" height="440" y="-20"/>	
+			</mx:Canvas>
+				
+			<!-- 공지사항 -->
+			<main:Main_Notice width="943" height="29" company="{company}"/>
+						
+			<mx:Spacer height="10"/>
+			
+			<mx:HBox width="1180" height="92" horizontalAlign="center" verticalAlign="middle" horizontalGap="0"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				
+				<!-- 게시판 -->
+				<main:Main_Board width="330" height="100%" title="Q&amp;A" iconType="1"/>
+				<mx:Spacer width="10"/>
+				<main:Main_Board width="330" height="100%" title="새로운 지식" iconType="2"/>
+				<mx:Spacer width="10"/>
+				<main:Main_Board width="330" height="100%" title="자료실" iconType="3"/>
+				
+				<mx:Spacer width="15"/>
+				
+				<!-- 링크 사이트 -->
+				<main:Main_LinkSite width="100%"/>
+				
+			</mx:HBox>
+			
+			<mx:Spacer height="25"/>
+			
+		</mx:VBox>
+		
+		<!-- footer -->
+		<mx:HBox y="764" width="100%" height="24" horizontalAlign="center" paddingTop="8">
+			<mx:Image source="@Embed(source='assets/main/copyright.png')"/>
+		</mx:HBox>
+			
+		<!-- 마이메뉴 -->		
+		<mx:VBox y="143" width="100%" height="100%" horizontalAlign="center">
+			<mx:Canvas width="1180" height="100%">
+				<main:Main_MyMenu x="76" width="177" height="100%"/>
+			</mx:Canvas>
+		</mx:VBox>
+		
+		<!-- Sub Navigation -->
+		<tobit:SubNavi id="subnavi" x="500" y="-200" alpha="0" closeClickEvent="subnaviClickHandler();" clickEvent="subnaviClickHandler();"/>
+		
+	</mx:Canvas>
+
+</mx:Application>

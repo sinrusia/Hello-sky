@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="mx.controls.listClasses.IDropInListItemRenderer"
+	width="100%" horizontalAlign="center" verticalAlign="middle" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			
+		import mx.controls.AdvancedDataGrid;
+		import mx.controls.dataGridClasses.DataGridListData;
+		import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+		import mx.controls.listClasses.BaseListData;
+		
+		[Bindable]private var checked:Boolean = false;
+		private var field:String;
+		private var _listData:BaseListData;
+		
+		public function set listData(value:BaseListData):void
+	   	{
+	    	_listData = value;
+	   	} 
+		
+		public function get listData():BaseListData
+	   	{
+	  		return _listData;
+	   	}
+
+		override public function set data(value:Object):void
+		{
+			super.data = value;											
+			if(value)
+			{
+				if ( data.check_visible != null && !data.check_visible)
+				{
+					this.visible = false;
+					checkbox.visible = false;
+					return;
+				}
+				else
+				{
+					this.visible = true;
+					checkbox.visible = true;
+				}
+				
+				if ( this.owner is AdvancedDataGrid )
+					field = AdvancedDataGridListData(listData).dataField;
+				else
+					field = DataGridListData(listData).dataField;
+				
+				if ( data[field] == "Y" ) checked = true;
+		    	else checked=false;
+			}
+		}
+		
+		private function chickHandler():void
+		{
+			checked = !checked;
+
+			if ( this.owner is AdvancedDataGrid )
+				field = AdvancedDataGridListData(listData).dataField;
+			else
+				field = DataGridListData(listData).dataField;
+		    
+		    if ( checked ) data[field] = "Y";
+		    else data[field] = "N";
+		}
+													
+		]]>
+	</mx:Script>
+		
+	<mx:CheckBox id="checkbox" selected="{checked}" click="chickHandler()"/>
+	
+</mx:HBox>

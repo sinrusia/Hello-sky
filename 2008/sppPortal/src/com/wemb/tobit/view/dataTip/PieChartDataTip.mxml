@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	backgroundColor="0x000000"
+	borderColor="0x000000"
+	borderStyle="solid" borderThickness=".5"
+	paddingTop="0"
+	paddingBottom="0"
+	paddingRight="5"
+	paddingLeft="5" cornerRadius="4"
+	verticalGap="-2" backgroundAlpha=".7"
+	color="0x000000"
+>
+	<mx:NumberFormatter id="nFmt" useThousandsSeparator="true" precision="2" />
+	<mx:HBox horizontalGap="-2">
+		<mx:Label text="{title}" color="0xffffff" 
+			textAlign="center" fontWeight="bold" fontSize="11" />
+		<mx:Label text="{_value}" color="{valueColor}" 
+			textAlign="center" fontSize="11" />
+	</mx:HBox>
+	<mx:HBox horizontalGap="-2">
+		<mx:Label text="{category}" fontSize="11" color="0xffffff" />
+		<mx:Label text="{categoryValue}" color="{valueColor}" fontSize="11"  />
+	</mx:HBox>
+	<mx:Script>
+		<![CDATA[
+			import ilog.charts3d.series.items.PieSeries3DItem;
+			import ilog.charts3d.series.PieSeries3D;
+			import mx.charts.series.items.ColumnSeriesItem;
+			import mx.charts.series.ColumnSeries;
+			import mx.charts.series.LineSeries;
+			import mx.charts.series.BarSeries;
+			import mx.charts.series.items.LineSeriesItem;
+			import mx.charts.HitData;
+
+			[Bindable]
+			private var title:String;
+
+			[Bindable]
+			private var _value:String;
+			
+			[Bindable]
+			private var valueColor:uint;
+			[Bindable]
+			private var categoryValue:String;
+			[Bindable]
+			private var category:String;
+			
+			override public function set data(value:Object):void{
+				var hd:HitData = value as HitData;
+				var pSI:PieSeries3DItem = hd.chartItem as PieSeries3DItem;
+
+				valueColor = hd.contextColor;
+				title = pSI.item.SUB_GROUP_CODE2 + ":";
+				_value = Number(nFmt.format(pSI.percentValue)) + "%";
+				if(pSI.item.CATEGORY == null){
+					category = "응답시간:";
+					if(Number(pSI.item.E2E_RESP) < 1)
+						categoryValue = Number(nFmt.format(pSI.item.E2E_RESP)) + "";
+					else
+						categoryValue = (nFmt.format(pSI.item.E2E_RESP));
+				} else {
+					category = pSI.item.CATEGORY + ":";
+					categoryValue = pSI.item.E2E_RESP;
+						
+				}					
+					
+			}//end set data
+		]]>
+	</mx:Script>
+</mx:VBox>

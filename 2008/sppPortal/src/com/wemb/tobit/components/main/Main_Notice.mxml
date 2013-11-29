@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XCanvas xmlns="com.wemb.tobit.pure.view.*"
+	xmlns:tobit="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:main="com.wemb.tobit.components.main.*" width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			import com.wemb.tobit.vo.BoardInfo;
+			import mx.utils.ObjectUtil;
+			import com.wemb.tobit.utils.SerializeUtil;
+			import mx.collections.ArrayCollection;
+
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.Request;
+			import org.puremvc.as3.interfaces.INotification;
+			
+			private var isComplete:Boolean = false;
+			private var isRegister:Boolean = false;
+			
+			public var company:String;
+			
+			private var org_ac:ArrayCollection;
+			private var new_ac:ArrayCollection;
+			private var paddingTop:Number = 6;
+			private var idx:int = 0;
+			private var movingIdx:int = 0;
+			
+			private function onComplete():void
+			{
+				isComplete = true;
+				onStart();
+			}
+			override public function onRegister():void
+			{
+				super.onRegister();
+				isRegister = true;
+				onStart();
+			}
+			private function onStart():void
+			{
+				if ( isComplete && isRegister )
+				{
+					var param:Object = new Object();
+					param.company = company;
+					facade.sendTobitService(Constants.GET_NOTICE_LIST, param, false);
+				}
+			}
+			override public function onRemove():void
+			{
+				super.onRemove();
+			}
+			
+			
+			/**
+			 * Observer 등록
+			 */
+			override public function listNotificationInterests():Array
+			{
+				return [
+					Constants.GET_NOTICE_LIST
+				];
+			}			
+			
+			/**
+			 * Observer Handler 
+			 */
+			override public function handleNotification(notification:INotification):void
+			{
+				var command:String = notification.getName();
+				
+				var request:Request = notification.getBody() as Request;
+				
+				/* if(request.pageName != this.name)
+					return; */
+				
+				switch( command )
+				{	
+					case Constants.GET_NOTICE_LIST:
+						rs_getNoticeList( notification.getBody() as Request );
+					break;
+				}
+			}			
+			
+			private function rs_getNoticeList( request:Request ):void
+			{
+				if(request.result is Array) new_ac = new ArrayCollection(request.result as Array);
+				else new_ac = request.result as ArrayCollection;
+				
+				// 공지사항 리스트 변경
+				if( SerializeUtil.ObjectToString(org_ac) != SerializeUtil.ObjectToString(new_ac) )
+				{
+					movingStop();
+					idx = 0;
+					
+					org_ac = ObjectUtil.copy(new_ac) as ArrayCollection;
+					
+					// 기존 공지사항을 지우고 새로운 공지사항 생성
+					while(noti_canvas.numChildren)
+					{
+						noti_canvas.removeChildAt(0);
+					}
+					while(bullet_box.numChildren)
+					{
+						bullet_box.removeChildAt(0);
+					}
+					
+					if ( new_ac.length > 0 )
+					{
+						for ( var i:int; i<new_ac.length; i++)
+						{
+							var bullet:Bullet_Notice = new Bullet_Notice();
+							if ( i == 0 ) bullet.selected = true;
+							bullet_box.addChild(bullet);
+							
+							var notice:Label_NoticeList = new Label_NoticeList();							
+							if ( i == 0 ) notice.y = paddingTop;
+							else notice.y = 29;							
+							notice.notice_data = new_ac.getItemAt(i) as BoardInfo;
+							noti_canvas.addChild(notice);
+						}
+					}
+					else
+					{
+						var nBullet:Bullet_Notice = new Bullet_Notice();
+						nBullet.selected = true;
+						bullet_box.addChild(nBullet);
+						
+						var nNotice:Label_NoticeList = new Label_NoticeList();							
+						nNotice.y = paddingTop;	
+						nNotice.notice_data = null;
+						noti_canvas.addChild(nNotice);
+					}
+					
+					if ( new_ac.length > 1 ) movingStart();
+				}
+		 	}
+		 	
+		 	private function movingStart():void
+		 	{
+		 		Tweener.addTween( noti_canvas.getChildAt(idx%org_ac.length), 
+		 							{delay:7, time:.6, y:paddingTop-29, transition:"easeoutquad", onStart:oldTweenStart, onComplete:oldTweenComplete });
+		 		Tweener.addTween( noti_canvas.getChildAt((idx+1)%org_ac.length), 
+		 							{delay:7, time:.6, y:paddingTop, transition:"easeoutquad", onStart:newTweenStart, onComplete:newTweenComplete });
+		 	}
+		 	private function oldTweenStart():void
+		 	{
+		 		Bullet_Notice(bullet_box.getChildAt(idx%org_ac.length)).selected = false;
+		 	}
+		 	private function oldTweenComplete():void
+		 	{
+		 		noti_canvas.getChildAt(idx%org_ac.length).y = 29;
+		 	}
+		 	private function newTweenStart():void
+		 	{
+		 		Bullet_Notice(bullet_box.getChildAt((idx+1)%org_ac.length)).selected = true;
+		 	}
+		 	private function newTweenComplete():void
+		 	{		 		
+		 		movingStop();
+		 		idx++;
+		 		movingStart();
+		 	}
+		 	
+		 	private function movingStop():void
+		 	{
+		 		Tweener.removeAllTweens();
+		 	}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed(source='assets/main/bg_notice.png')"/>
+	
+	<mx:HBox width="100%" height="100%" paddingLeft="215">
+		<mx:Canvas id="noti_canvas" verticalScrollPolicy="off" horizontalScrollPolicy="off" width="100%" height="100%"/>
+		<mx:HBox id="bullet_box" height="100%" verticalAlign="middle" horizontalGap="5" paddingRight="20"/>
+	</mx:HBox>
+	
+</XCanvas>
