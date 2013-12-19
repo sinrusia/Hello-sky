@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 buttonMode="true" useHandCursor="true" mouseChildren="false" 
+		 click="clickHandler(event)" height="100%">
+	
+	<fx:Metadata>
+		[Event(name="btnClick", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.tobit.utils.Util;
+			import com.wemb.tobit.vo.MenuInfo;
+			
+			
+			//---------------------------------
+			// Variables
+			//---------------------------------
+			[Bindable] public var text:String = "";
+			[Bindable] private var img:Class;
+			public  var menuInfo:MenuInfo;
+			public  var subId:String = "";
+			private var _selected:Boolean = false;
+			private var _isChangeSelected:Boolean = false;
+			
+			//---------------------------------
+			// Setter / Getter
+			//---------------------------------
+			public function set selected(value:Boolean):void
+			{
+				_isChangeSelected = true;
+				_selected = value;
+				invalidateProperties();
+			}
+			
+			public function get selected():Boolean
+			{
+				return _selected;
+			}
+			
+			
+			//---------------------------------
+			// Override
+			//---------------------------------
+			override protected function createChildren():void
+			{
+				super.createChildren();
+				
+				this.addEventListener(MouseEvent.ROLL_OVER, onRollOver);
+				this.addEventListener(MouseEvent.ROLL_OUT, onRollOut);
+			}
+			
+			override protected function measure():void
+			{
+				super.measure();
+				
+				width = measuredWidth;
+				height = measuredHeight;
+			}
+			
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if(_isChangeSelected)
+				{
+					_isChangeSelected = false;
+				}
+				
+				if(_selected)
+				{
+					menu_lbl.styleName = "subMenuSelect";
+				}
+				else
+				{
+					menu_lbl.styleName = "subMenuDefault";
+				}
+			}
+			
+			override public function styleChanged(styleName:String):void
+			{
+				super.styleChanged(styleName);
+				img = Util.GetCSSResource(".iconSubNaviDefault", "img") as Class;
+			}
+			
+			//---------------------------------
+			// function
+			//---------------------------------
+			private function onRollOver(event:MouseEvent):void
+			{
+				menu_lbl.styleName = "subMenuSelect";
+			}
+			
+			private function onRollOut(event:MouseEvent):void
+			{
+				menu_lbl.styleName = "subMenuDefault";
+			}
+			
+			private function clickHandler(e:Event):void
+			{
+				selected = false;
+				dispatchEvent(new Event("btnClick"));				
+			}
+		]]>
+	</fx:Script>
+	
+	<s:HGroup gap="0" verticalAlign="middle" horizontalAlign="center">
+		<s:Group>
+			<s:Image id="imgToggle" source="{img}" y="2" />
+		</s:Group>
+		<s:Group height="100%">
+			<s:Label id="menu_lbl" text="{text}" styleName="subMenuDefault" y="4" />
+		</s:Group>
+	</s:HGroup>
+</s:Group>

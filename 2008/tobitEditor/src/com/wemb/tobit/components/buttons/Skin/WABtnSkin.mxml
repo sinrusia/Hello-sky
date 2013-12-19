@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+             minWidth="21" minHeight="21" 
+             alpha.disabled="0.5">
+     
+    <fx:Metadata>
+        <![CDATA[ 
+        [HostComponent("spark.components.Button")]
+        ]]>
+    </fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			private var _xBoolen:Boolean;
+			
+			[Bindable]
+			public function get xBoolen():Boolean
+			{
+				return _xBoolen;
+			}
+			
+			public function set xBoolen(value:Boolean):void
+			{
+				_xBoolen = value;
+			}
+			
+		]]>
+	</fx:Script>
+    <s:states>
+        <s:State name="up" />
+        <s:State name="over" />
+        <s:State name="down" />
+        <s:State name="disabled" />
+    </s:states>
+    
+	<s:BitmapImage source.up="@Embed('assets/images/wa.png')"/>
+	<s:BitmapImage source.over="@Embed('assets/images/wa_select.png')"/>
+	<s:BitmapImage source.down="@Embed('assets/images/wa_select.png')"/>
+	<s:BitmapImage source.disabled="@Embed('assets/images/wa.png')"/>
+	<s:HGroup width="100%" horizontalAlign="right" paddingRight="20" top="2">
+		<s:RichText id="labelDisplay" textAlign="right" color="#ffe0a3" fontFamily="Dinbol"
+					fontSize="14" lineHeight="171.45%" whiteSpaceCollapse="preserve"/>
+	</s:HGroup>
+    
+</s:SparkButtonSkin>

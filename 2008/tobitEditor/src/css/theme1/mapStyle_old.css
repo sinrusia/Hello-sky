@@ -1,0 +1,673 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace resize "com.wemb.tobit.resize.*";
+@namespace panels "com.wemb.tobit.components.panels.*";
+@namespace components "com.wemb.tobit.components.*";
+
+/*
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Flex Font
+//
+////////////////////////////////////////////////////////////////////////////////
+*/
+@font-face{
+	src: url("/assets/fonts/YD_YGO530.TTF");
+	fontFamily: "Yoon 윤고딕 540_TT";
+	fontWeight:bold;
+	color: #000000; 
+}
+
+@font-face{
+	src: url("/assets/fonts/YGO540.TTF");
+	fontFamily: "Yoon 윤고딕 540_TT";
+	color: #000000; 
+}
+@font-face{
+	src: url("/assets/fonts/YGO550.TTF");
+	fontFamily: "Yoon 윤고딕 540_TT";
+	color: #000000; 
+}
+
+@font-face
+{
+	src: url("/assets/fonts/DINBOL.TTF"); 
+	fontFamily: "Dinbol";
+	font-weight:normal;
+	color:#000000;
+}
+
+
+/**********************************************************
+/* ResizeTool
+/**********************************************************/
+resize|ResizeTool{
+	
+	boxSize			: 7;
+	backgroundColor	: #FFFFFF;
+	backgroundAlpha	: 0.2;
+	borderColor		: #ffffff;
+	borderThickness	: 2;
+}
+
+/**********************************************************
+/* TobitItem
+/**********************************************************/
+TobitItem{
+	lineColor	: #FFFFFF;
+	color		: #DEDEDE;
+	fontFamily	: "서울남산 장체M";
+}
+
+/**********************************************************
+/* 맵 심볼
+/**********************************************************/
+TobitMapSymbols{
+	EmptySymbol: Embed(source="empty.swf", symbol="empty");
+	
+	PartSymbol: Embed(source="part.swf", symbol="PartSymbol");
+	
+	TeamSymbol: Embed(source="team.swf", symbol="TeamSymbol");
+	
+	CIOSymbol: Embed(source="cio.swf", symbol="CIOSymbol");
+}
+
+/**********************************************************
+/* 위로 정렬
+/**********************************************************/
+.alignTop{
+	downSkin: Embed("/assets/map/toolbar/align/popupAlignTop_down.png");
+	overSkin: Embed("/assets/map/toolbar/align/popupAlignTop_over.png");
+	upSkin: Embed("/assets/map/toolbar/align/popupAlignTop_up.png");
+}
+/**********************************************************
+/* 아래로 정렬
+/**********************************************************/
+.alignBtm{
+	downSkin: Embed("/assets/map/toolbar/align/popupAlignBtm_down.png");
+	overSkin: Embed("/assets/map/toolbar/align/popupAlignBtm_over.png");
+	upSkin: Embed("/assets/map/toolbar/align/popupAlignBtm_up.png");
+}
+/**********************************************************
+/* 왼쪽으로 정렬
+/**********************************************************/
+.alignLeft{
+	downSkin: Embed("/assets/map/toolbar/align/popupAlignLeft_down.png");
+	overSkin: Embed("/assets/map/toolbar/align/popupAlignLeft_over.png");
+	upSkin: Embed("/assets/map/toolbar/align/popupAlignLeft_up.png");
+}
+/**********************************************************
+/* 오른쪽으로 정렬
+/**********************************************************/
+.alignRight{
+	downSkin: Embed("/assets/map/toolbar/align/popupAlignRight_down.png");
+	overSkin: Embed("/assets/map/toolbar/align/popupAlignRight_over.png");
+	upSkin: Embed("/assets/map/toolbar/align/popupAlignRight_up.png");
+}
+/**********************************************************
+/* 패널 닫기 버튼(정렬 패널, 심볼선택 패널)
+/**********************************************************/
+.panelClose{
+	downSkin: Embed("/assets/map/popup/btn_close_down.png");
+	overSkin: Embed("/assets/map/popup/btn_close_over.png");
+	upSkin: Embed("/assets/map/popup/btn_close_up.png");
+}
+
+
+/**********************************************************
+/* 맵 팝업 타이틀
+/**********************************************************/
+.mapPopupTitleStyle{
+	/* fontFamily: "Yoon 윤고딕 540_TT";  */
+	fontWeight:bold;
+    fontSize: 13pt;
+    color:#ffffff;			
+}
+
+panels|TobitMapPopupPanel{
+	bgImg:Embed("/assets/map/panels/bg_map_popup.png");	
+	/* bgImg:Embed scale9Grid 사이즈 */
+	bgX:30;
+	bgY:30;
+	bgWidth:135;
+	bgHeight:179;		
+}
+
+/**********************************************************
+/* 툴바 상하좌우 이미지
+/**********************************************************/
+.toolbar{
+	leftImg:Embed("/assets/map/toolbar/header/toolbar_left.png");
+	rightImg:Embed("/assets/map/toolbar/header/toolbar_right.png");
+	topImg:Embed("/assets/map/toolbar/header/toolbar_top.png");
+	bottomImg:Embed("/assets/map/toolbar/header/toolbar_btm.png");
+}
+
+/**********************************************************
+/* 트리 아이콘
+/**********************************************************/
+
+components|TobitPanel{
+	 bgLeft:Embed("/assets/map/panels/panelTitle01.png");
+	 bgMiddle:Embed("/assets/map/panels/panelTitle02.png");
+	 bgRight:Embed("/assets/map/panels/panelTitle03.png");
+}
+
+/**********************************************************
+/* 네비게이터
+/**********************************************************/
+.navigator{
+	 firstArrow:Embed("/assets/map/navigator/icon_page arrow.png");
+	 otherArrow:Embed("/assets/map/navigator/icon_page_other_arrow.png");
+}
+
+/**********************************************************
+/* 속성창 이미지
+/**********************************************************/
+.allPropertyPanel{
+	bulletImg:Embed("/assets/map/toolbar/header/b_editList.gif");
+	titleImg:Embed("/assets/map/toolbar/header/title.png");
+	dvHorizontal:Embed("/assets/map/panels/popup_dvHorizontal.png");
+}
+/**********************************************************
+/* 속성창 타이틀
+/************ㅊ**********************************************/
+.allPropertyPanelTitle{
+	/* fontFamily: "Yoon 윤고딕 540_TT"; */
+	fontWeight:bold;
+	color: #414f79; 	
+	fontSize: 12pt;		
+}
+/**********************************************************
+/* 리사이즈 화살표 아이콘
+/**********************************************************/
+.ResizeArrowCursor{
+	verticalCursor: Embed("/assets/map/resize/up_down.png");
+	horizontalCursor: Embed("/assets/map/resize/left_right.png");
+	tlCursor: Embed("/assets/map/resize/tl_dr.png");
+	trCursor: Embed("/assets/map/resize/tr_dl.png");
+}
+
+/**********************************************************
+/* 맵 백그라운드(가이드 이미지)
+/**********************************************************/
+
+.circleButton{
+	downSkin: Embed("/assets/map/toolbar/toolicon/circle_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/circle_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/circle_up.png");
+}
+
+.dbButton{
+	downSkin: Embed("/assets/map/toolbar/toolicon/db_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/db_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/db_up.png");
+}
+
+.s9840B{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9840B_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9840B_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9840B_up.png");
+}
+.s9940B{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9940B_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9940B_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupStorage9940B_up.png");
+}
+
+.T10KA{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupStorageT10KA_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupStorageT10KA_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupStorageT10KA_up.png");
+}
+
+.PH9310{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupPH9310_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupPH9310_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupPH9310_up.png");
+}
+
+.disk1{
+	downSkin: Embed("/assets/map/toolbar/toolicon/diskBox01_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/diskBox01_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/diskBox01_up.png");
+}
+.disk2{
+	downSkin: Embed("/assets/map/toolbar/toolicon/diskBox02_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/diskBox02_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/diskBox02_up.png");
+}
+
+.uspv{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupUSPVM_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupUSPVM_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupUSPVM_up.png");
+}
+.DWDM{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupDWDM_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupDWDM_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupDWDM_up.png");
+}
+
+.HPserver{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupHPserver_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupHPserver_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupHPserver_up.png");
+}
+
+.IBMP6FHA{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP6-FHA_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP6-FHA_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP6-FHA_up.png");
+}
+
+.IBMP520{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP520_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP520_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP520_up.png");
+}
+
+.IBMP550{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_up.png");
+}
+
+.IBMP680P595{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP680-P595_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP680-P595_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP680-P595_up.png");
+}
+
+.IBMS80{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMS80_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMS80_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMS80_up.png");
+}
+
+.NAS{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupNAS_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupNAS_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupNAS_up.png");
+}
+
+.SunE10K{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunE10K_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunE10K_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunE10K_up.png");
+}
+
+.SunM9000{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunM9000_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunM9000_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunM9000_up.png");
+}
+
+.SunES3500{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunES3500_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunES3500_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunES3500_up.png");
+}
+
+.SunSFV440{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunSFV440_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunSFV440_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunSFV440_up.png");
+}		
+
+.SunT1000{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunT1000_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunT1000_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunT1000_up.png");
+}		
+
+.SunTapeLav{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSunTapeLav_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSunTapeLav_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSunTapeLav_up.png");
+}		
+.ibmp550{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupIBMP550_up.png");
+}
+
+.VTL{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupVTL_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupVTL_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupVTL_up.png");
+}		
+
+.EMC{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupEMC_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupEMC_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupEMC_up.png");
+}
+
+.SANSwitch32port{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSan32Port_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSan32Port_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSan32Port_up.png");
+}
+
+.SANSwitchDCX{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSanDCX_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSanDCX_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSanDCX_up.png");
+}
+
+
+.SANSwitchDirector{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupSanDirector_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupSanDirector_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupSanDirector_up.png");
+}
+
+.TimeSync{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupTimeSync_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupTimeSync_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupTimeSync_up.png");
+}
+
+.system{
+	downSkin: Embed("/assets/map/toolbar/toolicon/system_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/system_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/system_up.png");
+}
+
+.network{
+	downSkin: Embed("/assets/map/toolbar/toolicon/network_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/network_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/network_up.png");
+}
+
+.rackTop{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/rackTop_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/rackTop_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/rackTop_up.png");
+}
+
+.rack{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/rack_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/rack_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/rack_up.png");
+}
+
+.rackOpen{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/openRack_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/openRack_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/openRack_up.png");
+}
+
+.btnETS105{
+	downSkin: Embed("/assets/map/toolbar/toolicon/system_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/system_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/system_up.png");
+}
+
+.line{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupLine_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupLine_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupLine_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/popupLine_selOver.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/popupLine_selOver.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/popupLine_down.png");	
+}
+
+.openLine{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/openLine_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/openLine_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/openLine_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/openLine_down.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/openLine_down.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/openLine_down.png");	
+}
+
+.openRack{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/rack_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/rack_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/rack_up.png");
+}
+
+.group{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/group_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/group_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/group_up.png");
+}
+
+.infraBuilding{
+	downSkin: Embed("/assets/map/toolbar/toolicon/infraTop_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/infraTop_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/infraTop_up.png");
+}
+
+.infraGroup{
+	downSkin: Embed("/assets/map/toolbar/toolicon/infra_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/infra_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/infra_up.png");
+}
+
+.curveLine{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_selOver.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_selOver.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/popupCurveLine_down.png");	
+}
+
+.panel{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/panel_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/panel_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/panel_up.png");
+}
+
+.box{			
+	downSkin: Embed("/assets/map/toolbar/toolicon/box_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/box_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/box_up.png");
+}
+
+.labelBtn{
+	downSkin: Embed("/assets/map/toolbar/toolicon/label_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/label_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/label_up.png");
+}
+
+.net{
+	downSkin: Embed("/assets/map/toolbar/toolicon/net_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/net_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/net_up.png");
+}		
+
+.symbolInfo{
+	downSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_up.png");
+}
+.symbolChange{
+	downSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_down.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/symbolInfo_down.png");
+}
+.alignBtn{
+	downSkin: Embed("/assets/map/toolbar/toolicon/align_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/align_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/align_up.png");
+}
+
+.bothArrowRounding{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_selOver.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_selOver.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/popupArrow03_down.png");	
+}
+
+.mapBothArrow{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_selOver.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_selOver.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/popupArrow02_down.png");	
+}
+
+.mapArrow{
+	downSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_up.png");
+	selectedDownSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_selOver.png");
+	selectedOverSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_selOver.png");
+	selectedUpSkin: Embed("/assets/map/toolbar/toolicon/popupArrow01_down.png");	
+}
+
+.save{
+	downSkin: Embed("/assets/map/toolbar/toolicon/save_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/save_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/save_up.png");
+}
+.exit{
+	downSkin: Embed("/assets/map/toolbar/toolicon/exit_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/exit_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/exit_up.png");
+}
+
+.rackIBM{
+	downSkin: Embed("/assets/map/toolbar/toolicon/IBM_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/IBM_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/IBM_up.png");
+}
+
+.rackSUN{
+	downSkin: Embed("/assets/map/toolbar/toolicon/SUN_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/SUN_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/SUN_up.png");
+}
+
+.rackHP{
+	downSkin: Embed("/assets/map/toolbar/toolicon/HP_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/HP_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/HP_up.png");
+}
+
+.boardSquard{
+	downSkin: Embed("/assets/map/toolbar/toolicon/boardSquard_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/boardSquard_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/boardSquard_up.png");
+}
+
+.boardCircle{
+	downSkin: Embed("/assets/map/toolbar/toolicon/boardCircle_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/boardCircle_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/boardCircle_up.png");
+}
+
+/****************************************************************
+ **	Network Symbol
+ ****************************************************************/
+
+.TAP{
+	downSkin: Embed("/assets/map/toolbar/network/TAP_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TAP_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TAP_up.png");
+}
+
+.TBackbone{
+	downSkin: Embed("/assets/map/toolbar/network/TBackbone_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TBackbone_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TBackbone_up.png");
+}
+
+.TCisco3750S{
+	downSkin: Embed("/assets/map/toolbar/network/TCisco3750S_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TCisco3750S_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TCisco3750S_up.png");
+}
+
+.TVPN{
+	downSkin: Embed("/assets/map/toolbar/network/TVPN_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TVPN_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TVPN_up.png");
+}
+
+.TCloud{
+	downSkin: Embed("/assets/map/toolbar/network/TCloud_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TCloud_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TCloud_up.png");
+}
+
+.TFW{
+	downSkin: Embed("/assets/map/toolbar/network/TFW_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TFW_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TFW_up.png");
+}
+
+.TIPS{
+	downSkin: Embed("/assets/map/toolbar/network/TIPS_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TIPS_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TIPS_up.png");
+}
+
+.TLRS{
+	downSkin: Embed("/assets/map/toolbar/network/TLRS_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TLRS_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TLRS_up.png");
+}
+
+.TMA{
+	downSkin: Embed("/assets/map/toolbar/network/TMA_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TMA_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TMA_up.png");
+}
+
+.TRouter{
+	downSkin: Embed("/assets/map/toolbar/network/TRouter_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TRouter_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TRouter_up.png");
+}
+
+.TSwitch{
+	downSkin: Embed("/assets/map/toolbar/network/TSwitch_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TSwitch_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TSwitch_up.png");
+}
+
+.TVPNC{
+	downSkin: Embed("/assets/map/toolbar/network/TVPNC_down.png");
+	overSkin: Embed("/assets/map/toolbar/network/TVPNC_over.png");
+	upSkin: Embed("/assets/map/toolbar/network/TVPNC_up.png");
+}
+
+
+/****************************************************************
+ **	Rack Information
+ ****************************************************************/
+.networkGroup{
+	downSkin: Embed("/assets/map/toolbar/toolicon/san32Port_down.png");
+	overSkin: Embed("/assets/map/toolbar/toolicon/san32Port_over.png");
+	upSkin: Embed("/assets/map/toolbar/toolicon/san32Port_up.png");
+}
+
+
+/****************************************************************
+ **	Network Map
+ ****************************************************************/
+.networkLabel{
+	center: Embed("/assets/map/network/txt_pn_center.png");
+	left: Embed("/assets/map/network/txt_pn_left.png");
+	right: Embed("/assets/map/network/txt_pn_right.png");
+	
+	critical: Embed("/assets/map/network/no_bg_dinbol10.png");
+	major: Embed("/assets/map/network/no4_bg_dinbol10.png");
+	minor: Embed("/assets/map/network/no1_bg_dinbol10.png");
+	warning: Embed("/assets/map/network/no3_bg_dinbol10.png");
+	normal: Embed("/assets/map/network/no2_bg_dinbol10.png");
+}
+/* 
+.networkMapEditor{
+	structure: Embed("/assets/map/network/building&txt.png");
+}
+  */

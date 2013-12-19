@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  height="100%" verticalAlign="bottom" paddingBottom="5">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.tobit.vo.MenuInfo;
+			
+			[Bindable]
+			private var _menuInfo:MenuInfo;
+
+			public function get menuInfo():MenuInfo
+			{
+				return _menuInfo;
+			}
+
+			public function set menuInfo(value:MenuInfo):void
+			{
+				_menuInfo = value;
+			}
+
+		]]>
+	</fx:Script>
+	
+	<s:Image source="@Embed(source='/assets/common/b_pageTitle.png')"/>
+	
+	<s:HGroup paddingBottom="6">
+		<s:Label text="{_menuInfo.name}" styleName="topNavigationMenu" />
+	</s:HGroup>
+</s:HGroup>

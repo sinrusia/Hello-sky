@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<mx:Stroke alpha="0" caps="none" id="oneTicks"/>
+		
+		<mx:DateFormatter id="df" formatString="JJ:NN:SS"/>
+		<mx:NumberFormatter id="nf" precision="2" useThousandsSeparator=","/>
+		<mx:NumberFormatter id="nf2" useThousandsSeparator=","/>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.tobit.vo.CommonVars;
+			
+			import mx.charts.HitData;
+			import mx.charts.chartClasses.IAxis;
+			import mx.charts.events.ChartItemEvent;
+			import mx.charts.series.AreaSeries;
+			import mx.charts.series.LineSeries;
+			import mx.charts.series.items.LineSeriesItem;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+			import mx.graphics.Stroke;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			
+			private var series_ac:ArrayCollection;
+			
+			private var _unit:String = "";
+			
+			public var doubleSeries:Boolean = false;
+			public var d_title1:String;
+			public var d_title2:String;
+			
+			[Bindable]private var chart_ac:ArrayCollection = new ArrayCollection();	// 차트 데이터프로바이더	
+			[Bindable]public var group_id:String = "";
+			[Bindable]public var upmu:String = "";
+			[Bindable]public var _rt_type:String;
+			
+			[Bindable]private var _maximum:Number = NaN;
+			private var _increaseNum:Number = 100;
+			private var _defaultNum:Number = 105;
+			private var plusArray:Array = new Array();
+			
+			private var _type:String;
+			private var last_obj:Object = new Object();
+			private var databox_obj:Object;
+			[Bindable]
+			public var legendType:String = "default"; 
+			
+			public function set maximum(value:Number):void
+			{
+				_maximum = value;
+			}
+			public function set defaultNum(value:Number):void
+			{
+				_defaultNum = value;
+				_maximum = value;
+			}
+			public function set increaseNum(value:Number):void
+			{
+				_increaseNum = value;
+			}
+			public function set unit(value:String):void
+			{
+				if ( value != null ) _unit = value;
+			}		
+			public function set type(value:String):void
+			{
+				if ( value != null ) _type = value;
+			}
+			
+			public function set series(series:ArrayCollection):void
+			{
+				if ( series != null )
+				{
+					series_ac = ObjectUtil.copy(series) as ArrayCollection;
+					
+					if ( !doubleSeries ) 
+					{
+						if ( _type == "da_080" ) 
+						{
+							padding(0, 5, 5, 5);
+							chartbox.setStyle("horizontalGap", -10);
+						}
+						else 
+						{
+							chartbox.setStyle("horizontalGap", -11);
+						}
+					}
+					else
+					{
+						if ( _type == "popup" ) chartbox.setStyle("paddingRight", -5);
+						else chartbox.setStyle("paddingRight", -22);
+					}
+					createSeries();
+				}
+			}		
+			
+			public function reset():void
+			{
+				legend_box.removeAllChildren();
+				chart_ac = null;
+			}
+			public function remove():void
+			{
+				
+			}
+			
+			private var j:int;
+			private var num:Number;
+			private var num1:Number;
+			public function get ten_ac():ArrayCollection{
+				return this.chart_ac;
+			}	
+			
+			public function set ten_ac(ac:ArrayCollection):void
+			{
+				chart_ac = ObjectUtil.copy(ac) as ArrayCollection;
+				chart.dataProvider = chart_ac;
+				if ( !doubleSeries ) 
+				{		
+					if ( chart_ac.length != 0 )
+					{
+						// y축 최대값 변경
+						if ( _unit != "(%)" )
+						{
+							for( var i:int=0; i<chart_ac.length; i++ )
+							{
+								num = _defaultNum;
+								for( var j:int=0; j<series_ac.length; j++)
+								{
+									if ( isNaN(Number(chart_ac[i][series_ac.getItemAt(j).host_name]))) num1 = _defaultNum;
+									else num1 = Number(chart_ac[i][series_ac.getItemAt(j).host_name]);
+									
+									num = Math.max(num,num1);
+								}
+								maxCheck(num);
+							}
+						}
+						
+						var object:Object = chart_ac.getItemAt(chart_ac.length-1);
+						
+						for(var key:String in object)
+						{
+							try{
+								if (  key != null && key != "time"  )
+								{
+									if ( databox_obj[key] != null ) 
+									{
+										if ( object[key] != null )
+											databox_obj[key].cdata = Math.round(Number(object[key]));
+										else	
+											databox_obj[key].cdata = null;
+									}
+								}
+							}catch(e:Error){
+								//trace("error ",key,":String;");
+							}
+						}
+					}
+				}
+				else
+				{
+					// y축 최대값 변경
+					for( var i:int=0; i<chart_ac.length; i++ )
+					{
+						num = _defaultNum;
+						for( var j:int=0; j<series_ac.length; j++)
+						{
+							if ( isNaN(Number(chart_ac[i][series_ac.getItemAt(j).host_name+d_title1]))) num1 = _defaultNum;
+							else num1 = Number(chart_ac[i][series_ac.getItemAt(j).host_name+d_title1]);
+							
+							num = Math.max(num,num1);
+							
+							if ( isNaN(Number(chart_ac[i][series_ac.getItemAt(j).host_name+d_title2]))) num1 = _defaultNum;
+							else num1 = Number(chart_ac[i][series_ac.getItemAt(j).host_name+d_title2]);
+							
+							num = Math.max(num,num1);
+						}
+						maxCheck(num);
+					}
+				}
+			}
+			
+			private var _ac:ArrayCollection;
+			
+			public function get cur_ac():ArrayCollection
+			{
+				if(!_ac)
+				{
+					var result:ArrayCollection = new ArrayCollection();
+					if(chart_ac && chart_ac.length > 0)
+					{
+						result.addItem(chart_ac[chart_ac.length-1]);
+					}
+					return result;
+				}
+				else
+				{
+					return _ac; 	
+				}
+				
+			}
+			
+			public function set cur_ac(ac:ArrayCollection):void
+			{
+				if ( ac != null )
+				{
+					_ac = ac;
+					setNull();
+					//if ( chart_ac != null && chart_ac.length > CommonVars.CHART_DURATION ) 
+					//{
+					if ( chart_ac != null && chart_ac.length > 1 )
+					{
+						chart_ac.removeItemAt(0);
+						if ( _unit != "(%)" ) oldMaxCheck();
+					}
+					
+					var object:Object = ac.getItemAt(0) as Object;
+					
+					if ( object == null || ac.length == 0 ) return;
+					
+					if ( chart_ac == null ) chart_ac = new ArrayCollection(); 
+					chart_ac.addItem( object );
+					
+					if ( doubleSeries )
+					{
+						num = _defaultNum;
+						for( var j:int=0; j<series_ac.length; j++)
+						{
+							if ( isNaN(Number(object[series_ac.getItemAt(j).host_name + d_title1]))) num1 = _defaultNum;
+							else num1 = Number(object[series_ac.getItemAt(j).host_name + d_title1]);
+							
+							num = Math.max(num,num1);
+							
+							if ( isNaN(Number(object[series_ac.getItemAt(j).host_name + d_title2]))) num1 = _defaultNum;
+							else num1 = Number(object[series_ac.getItemAt(j).host_name + d_title2]);
+							
+							num = Math.max(num,num1);
+						}
+						maxCheck(num);
+					}
+					else
+					{
+						if ( _unit != "(%)" )
+						{
+							num = _defaultNum;
+							for( var j:int=0; j<series_ac.length; j++)
+							{
+								if ( isNaN(Number(object[series_ac.getItemAt(j).host_name]))) num1 = _defaultNum;
+								else num1 = Number(object[series_ac.getItemAt(j).host_name]);
+								
+								num = Math.max(num,num1);
+							}
+							maxCheck(num);
+						}
+					}
+					
+					for(var key:String in object)
+					{
+						try{
+							if (  key != null && key != "time"  )
+							{
+								if ( databox_obj[key] != null ) 
+								{
+									databox_obj[key].cdata = Math.round(Number(object[key]));
+								}
+							}
+						}catch(e:Error){
+							//trace("error ",key,":String;");
+						} 
+					}
+				} 
+			}
+			
+			public function padding(top:Number, bottom:Number, left:Number, right:Number):void
+			{
+				chartbox.setStyle("paddingTop", top);
+				chartbox.setStyle("paddingBottom", bottom);
+				chartbox.setStyle("paddingLeft", left);
+				chartbox.setStyle("paddingRight", right);
+			}
+			
+			// 최대값 체크하고 배열에 담기
+			private function maxCheck(pNum:Number):void
+			{
+				if ( pNum > _maximum )
+				{
+					_maximum += Math.ceil(((pNum/_increaseNum)-(_maximum/_increaseNum)))*_increaseNum;
+					plusArray.push(_maximum);
+				}
+				else
+				{
+					if ( pNum > _defaultNum )
+					{
+						pNum = _defaultNum + Math.ceil(((pNum/_increaseNum)-(_defaultNum/_increaseNum)))*_increaseNum;
+					}
+					else
+					{
+						pNum = _defaultNum;
+					}
+					plusArray.push(pNum);
+				}
+			}
+			
+			// 지난 최대값 체크 - 삭제한 데이터의 값이 최대값이었을때 차상위 최대값으로 다운
+			private function oldMaxCheck():void
+			{
+				plusArray.shift();
+				
+				var sortArray:Array = new Array();
+				sortArray = sortArray.concat(plusArray);
+				
+				_maximum = getArrayMaxNum(sortArray);
+			}
+			
+			// 라인차트 시간당 최대값 구하기
+			private function getArrayMaxNum(temp:Array):Number
+			{
+				var tempArray:Array = temp;
+				tempArray.sort(Array.NUMERIC);
+				tempArray.reverse();
+				
+				return tempArray[0];
+			}
+			
+			/*******************************************************************************************************************
+			 /* 차트 라인시리즈 동적으로 생성
+			/*******************************************************************************************************************/
+			private function createSeries():void
+			{
+				_maximum = _defaultNum;
+				plusArray = new Array();
+				
+				var create_cnt:Number = 0;
+				var series_a:Array = new Array();
+				
+				databox_obj = new Object();
+				legend_box.removeAllChildren();
+				
+				for( var i:int=0; i<series_ac.length; i++)
+				{
+					if ( !doubleSeries )
+					{
+						var s:LineSeries = new LineSeries();
+						var dname:String = series_ac.getItemAt(i).host_label;
+						var host_name:String = series_ac.getItemAt(i).host_name;
+						s.yField = host_name;
+						s.displayName = dname;
+						s.setStyle("lineStroke", new Stroke(CommonVars.COLORS[i], 2));
+						series_a.push(s);
+						if(legendType == "db"){
+							databox_obj[host_name] = new DataLegendLabelBox();
+						} else {
+							databox_obj[host_name] = new DataLegendBox();
+						}
+						databox_obj[host_name].name = host_name;
+						legend_box.addChild( databox_obj[host_name] );
+						databox_obj[host_name].color = CommonVars.COLORS[i];
+						databox_obj[host_name].title = series_ac.getItemAt(i).host_label;
+					}
+					else
+					{
+						var s1:LineSeries = new LineSeries();
+						var dname1:String = series_ac.getItemAt(i).host_label + d_title1;
+						s1.yField = series_ac.getItemAt(i).host_name + d_title1;
+						s1.displayName = dname1;
+						s1.setStyle("lineStroke", new Stroke(CommonVars.COLORS2[create_cnt], 2));
+						series_a.push(s1);
+						
+						create_cnt++;
+						
+						var s2:LineSeries = new LineSeries();
+						var dname2:String = series_ac.getItemAt(i).host_label + d_title2;
+						s2.yField = series_ac.getItemAt(i).host_name + d_title2;
+						s2.displayName = dname2;
+						s2.setStyle("lineStroke", new Stroke(CommonVars.COLORS2[create_cnt], 2));
+						series_a.push(s2);
+						
+						create_cnt++;
+					}
+				}
+				
+				this.chart.series = series_a;
+			}
+			
+			private function setNull():void
+			{
+				if ( !doubleSeries ) 
+				{
+					for( var i:int=0; i<series_ac.length; i++)
+					{
+						if ( databox_obj[series_ac.getItemAt(i).host_name] != null )
+							databox_obj[series_ac.getItemAt(i).host_name].cdata = null;
+					}
+				}
+			}		
+			
+			/*******************************************************************************************************************
+			 /* Y축 숫자 콤마 형식으로 바꾸기
+			/*******************************************************************************************************************/
+			private function linearAxis_labelFunc(item:Object, prevValue:Object, axis:IAxis):String 
+			{
+				if(item < 1) return item.toString();
+				return nf2.format(item);
+			}
+			
+			/*******************************************************************************************************************
+			 /* 차트 CategoryAxis label function
+			 // time 시분(HH:MM)
+			/*******************************************************************************************************************/
+			private function label_func(label:String, pcat:String, ax:CategoryAxis, item:Object):String 
+			{
+				return label.substr(8,2) + ":" +  label.substr(10,2);
+				//return label.substr(0,2) + ":" + label.substr(2,2);// + ":" + label.substr(4,2);
+			}
+			
+			/*******************************************************************************************************************
+			 /* chart datatip function
+			/*******************************************************************************************************************/
+			private function datatip_func(e:HitData):String
+			{
+				var time:String = e.item.time;
+				var s:String = time.substr(8,2) + ":" + time.substr(10,2) + ":" + time.substr(12,2);
+				
+				if ( _unit == "(tps)" || _unit == "(건)" )
+				{
+					return "<B>" + LineSeries(e.element).displayName + "</B>\n" + 
+						s + "\n" + nf2.format(Number(LineSeriesItem(e.chartItem).yValue)+1-1) + _unit;
+				}
+				return "<B>" + LineSeries(e.element).displayName + "</B>\n" + 
+					s + "\n" + nf.format(Number(LineSeriesItem(e.chartItem).yValue)+1-1) + _unit;
+			}
+		]]>
+	</fx:Script>
+	<s:HGroup id="chartbox" width="100%" height="100%" >
+		
+		<mx:LineChart id="chart" width="100%" height="100%" color="#000000" fontFamily="verdana"
+					  fontSize="8" dataProvider="{chart_ac}" showDataTips="true" dataTipFunction="datatip_func">
+			<mx:seriesFilters>
+				<mx:DropShadowFilter distance="2" angle="90" color="#888888" blurY="2" blurX="2" alpha="0.4"/>
+			</mx:seriesFilters>
+			
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="time" labelFunction="label_func"/>
+			</mx:horizontalAxis>
+			<mx:horizontalAxisRenderer>
+				<mx:AxisRenderer canDropLabels="true" axisStroke="{oneTicks}" tickStroke="{oneTicks}"/>
+			</mx:horizontalAxisRenderer>
+			
+			<mx:verticalAxis>
+				<mx:LinearAxis minimum="0" maximum="{_maximum}" labelFunction="linearAxis_labelFunc" />
+			</mx:verticalAxis>
+			<mx:verticalAxisRenderer>
+				<mx:AxisRenderer axisStroke="{oneTicks}" tickStroke="{oneTicks}" tickLength="0" minorTickStroke="{oneTicks}"/>
+			</mx:verticalAxisRenderer>
+			
+			<mx:backgroundElements>
+				<common:ChartPatternBg width="100%" height="100%" />
+				<mx:GridLines direction="horizontal" horizontalChangeCount="1">
+					<mx:horizontalStroke>
+						<mx:Stroke color="0x43454f" weight="1" />
+					</mx:horizontalStroke>
+				</mx:GridLines>				
+			</mx:backgroundElements>			
+		</mx:LineChart>
+		
+		<s:VGroup id="legend_box" gap="2"/>
+	</s:HGroup>
+	
+</s:Group>

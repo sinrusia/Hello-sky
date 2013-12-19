@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2012 WeMB INC. 
+// All Rights Reserved.
+//
+//	@auther			: jaehag
+//	@description 	:
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="1280" height="768"
+					   xmlns:bms="com.wemb.bms.*"
+					   preinitialize="apppreinitializeHandler(event)"
+					   initialize="appinitializeHandler(event)"
+					   creationComplete="appcreationCompleteHandler(event)" xmlns:local="*">
+	
+	<fx:Style source="css/theme1/mapStyle.css"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.tobit.factory.TobitComponentDefinition;
+			import com.wemb.tobit.map.SampleMapInitializer;
+			import com.wemb.tobit.pure.ApplicationFacade;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.vo.ComponentInfo;
+			import com.wemb.tobit.vo.TobitItem;
+			
+			import mx.core.IVisualElement;
+			import mx.events.FlexEvent;
+			import mx.managers.FocusManager;
+			
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
+			
+			protected function apppreinitializeHandler(event:FlexEvent):void
+			{
+				facade.startup(this);
+			}
+			
+			protected function appinitializeHandler(event:FlexEvent):void
+			{
+				//StyleManager.loadStyleDeclarations("http://tobit.wemb.co.kr/css/theme1/mapStyle.swf");
+			}
+			
+			protected function appcreationCompleteHandler(event:FlexEvent):void
+			{
+				TobitComponentDefinition.getInstance().registerTobitComponent();
+				SampleMapInitializer.init();
+				
+				/* var contextMenu:ContextMenu = new ContextMenu();
+				contextMenu.hideBuiltInItems();
+				this.contextMenu = contextMenu; */
+				
+			}
+			
+			
+			
+			public function viewChange(target:IVisualElement):void {
+				this.setElementIndex(target, this.numElements - 1);
+				
+				for (var i:int = 0; i < this.numElements; i++){
+					var element:IVisualElement = this.getElementAt(i);
+					if (element == target) {
+						element.visible = true;
+						element.includeInLayout = true;
+					} else {
+						element.visible = false;
+						element.includeInLayout = false;
+					}
+				}
+			}
+			
+			public function initObject():void {
+				TobitItem;
+			}
+		]]>
+	</fx:Script>
+	
+	<!-- index페이지 레이아웃을 구성 -->
+		
+	<local:Main id="scrnMain" visible="false" includeInLayout="false"/>
+		
+	<local:Login id="scrnLogin" />
+		
+</s:WindowedApplication>

@@ -1,0 +1,213 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+/**********************************************************
+/* Map Component Info
+/**********************************************************/
+.tobitItem{
+	lineColor	: #FFFFFF;
+	color		: #DEDEDE;
+}
+
+.componentInfo{
+	color : #FFFFFF;
+	lineColor : #FFFFFF;
+	borderColor : #0000CC;
+	borderStyle : "solid";
+	borderThickness : 2;
+	backgroundColor : #0066FF;
+	backgroundAlpha : 1;
+	fontFamily      : dotum;
+	
+}
+
+
+
+/**********************************************************
+/* 맵 심볼
+/**********************************************************/
+TobitMapSymbols{
+	/* NH 추가 심볼 */
+	SGroup: Embed(source="SGroup.swf", symbol="SGroup");
+	Group_mc: Embed(source="group_mc.swf", symbol="group_mc");
+	Was: Embed(source="Was.swf", symbol="was");
+	Res3: Embed(source="Res3.swf", symbol="res3");
+	NwGroup2: Embed(source="nwGroup2.swf", symbol="nwGroup2");
+	System_mc: Embed(source="system_mc.swf", symbol="system_mc");
+	
+	
+	/*NETWORK MAP*/
+	NetworkGroup: Embed(source="Box_icon.swf", symbol="box_icon");
+	/* SERVER*/
+	AServer: Embed(source="D2Server.swf", symbol="AServer");
+	AVServer: Embed(source="D2Server.swf", symbol="AVServer");
+	
+	AServer02: Embed(source="WooriServer.swf", symbol="AServer");
+	AVServer02: Embed(source="WooriServer.swf", symbol="AVServer");
+	
+	/* NETWORK */
+	TAP: Embed(source="Network.swf", symbol="TAP");
+	TAS: Embed(source="Network.swf", symbol="TAS");
+	TBackbone: Embed(source="Network.swf", symbol="TBackbone");
+	TBridge: Embed(source="Network.swf", symbol="TBridge");
+	TBTS10200: Embed(source="Network.swf", symbol="TBTS10200");
+	TBuilding: Embed(source="Network.swf", symbol="TBuilding");
+	TCache: Embed(source="Network.swf", symbol="TCache");
+	TCisco3750S: Embed(source="Network.swf", symbol="TCisco3750S");
+	TCisco4000S: Embed(source="Network.swf", symbol="TCisco4000S");
+	TCisco7507: Embed(source="Network.swf", symbol="TCisco7507");
+	TCisco7600R: Embed(source="Network.swf", symbol="TCisco7600R");
+	TCloud: Embed(source="Network.swf", symbol="TCloud");
+	TFW: Embed(source="Network.swf", symbol="TFW");
+	TGigabit: Embed(source="Network.swf", symbol="TGigabit");
+	TIPS: Embed(source="Network.swf", symbol="TIPS");
+	TL4: Embed(source="Network.swf", symbol="TL4");
+	TLD: Embed(source="Network.swf", symbol="TLD");
+	TLRS: Embed(source="Network.swf", symbol="TLRS");
+	TMA: Embed(source="Network.swf", symbol="TMA");
+	TNAT: Embed(source="Network.swf", symbol="TNAT");
+	TNetGroup: Embed(source="Network.swf", symbol="TNetGroup");
+	TPixFW: Embed(source="Network.swf", symbol="TPixFW");
+	TRouter: Embed(source="Network.swf", symbol="TRouter");
+	TSSLO: Embed(source="Network.swf", symbol="TSSLO");
+	TSwitch: Embed(source="Network.swf", symbol="TSwitch");
+	TVPN: Embed(source="Network.swf", symbol="TVPN");
+	TVPNC: Embed(source="Network.swf", symbol="TVPNC");
+	TVS: Embed(source="Network.swf", symbol="TVS");
+	
+	SmsGroup: Embed(source="SmsGroup.swf", symbol="SmsGroup");
+	
+	DB: Embed(source="DB.swf", symbol="DB");
+	Circle: Embed(source="Circle.swf", symbol="Circle");
+	CirclePanel: Embed(source="CirclePanel.swf", symbol="CirclePanel");
+	RectanglePanel: Embed(source="RectanglePanel.swf", symbol="RectanglePanel");
+	/*
+	HP - 03 HP_RP3400   :   HPRP3400
+	HP - 05 HP_K260  : HPK260
+	HP - 08 HP_RP4440    : HPRP4440
+	HP - 10 HP_RX7640	    : HPRX7640
+	HP - 11 HP_RX6600   : HPRX6600
+	05  HP_L5470, HP_RP5470, HP_L2000   : HPL2000
+	*/	
+	HPA500: Embed(source="symbol.swf", symbol="HPA500");
+	HPRP3400: Embed(source="symbol.swf", symbol="HPRP3400");
+	HPK260: Embed(source="symbol.swf", symbol="HPK260");
+	HPRP4440: Embed(source="symbol.swf", symbol="HPRP4440");
+	HPRX7640: Embed(source="symbol.swf", symbol="HPRX7640");
+	HPRX6600: Embed(source="symbol.swf", symbol="HPRX6600");
+	HPL2000: Embed(source="symbol.swf", symbol="HPL2000");
+	
+	/* 
+	IBM - 00 IBM_RS6000-P570 : IBMRS6000P570
+	IBM - 12 IBM_(P650)7038-6M2  : IBMP650
+	IBM - 14 IBM_7026-6H1  : IBM70266H1
+	IBM - 19 IBM_7040-681  : IBM7040681
+	IBM - 21 IBM_(P6)8204-E8A   : IBMP68204E8A
+	*/
+	IBMRS6000P570: Embed(source="symbol.swf", symbol="IBMRS6000P570");
+	IBMP650: Embed(source="symbol.swf", symbol="IBMP650");
+	IBM70266H1: Embed(source="symbol.swf", symbol="IBM70266H1");
+	IBM7040681: Embed(source="symbol.swf", symbol="IBM7040681");
+	IBMP68204E8A: Embed(source="symbol.swf", symbol="IBMP68204E8A");
+	
+	/* 
+	SUN - 00 SUNFire-T2000  : SunFireT2000
+	SUN - 01 SUN_Fire-T1000	: SUNFireT1000
+	SUN - 06 SUN_E1000  : SUNFireE4900
+	SUN - 07 SUN_M8000  : SUNM8000
+	 */
+	SunFireT2000: Embed(source="symbol.swf", symbol="SunFireT2000");
+	SUNFireT1000: Embed(source="symbol.swf", symbol="SUNFireT1000");
+	SUNFireE4900: Embed(source="symbol.swf", symbol="SUNFireE4900");
+	SUNM8000: Embed(source="symbol.swf", symbol="SUNM8000");
+	
+	/* 
+	ETC - 05 TimeSync    : TapeLibrary
+	ETC - 06 SUN Library 
+	 */
+ 	TimeSync: Embed(source="symbol.swf", symbol="TimeSync");
+ 	SUNLibrary: Embed(source="symbol.swf", symbol="SUNLibrary");
+	
+	NAS: Embed(source="ETC.swf", symbol="NAS");
+	SANSwitch32Port: Embed(source="ETC.swf", symbol="SANSwitch32Port");
+	SANSwitchDCX: Embed(source="ETC.swf", symbol="SANSwitchDCX");
+	SANSwitchDirector: Embed(source="ETC.swf", symbol="SANSwitchDirector");
+	Switch: Embed(source="ETC.swf", symbol="Switch");
+	TUps: Embed(source="ETC.swf", symbol="TUps");
+	Router: Embed(source="ETC.swf", symbol="Router");
+	TFirewall: Embed(source="ETC.swf", symbol="TFirewall");
+	TCloud: Embed(source="ETC.swf", symbol="TCloud");
+	TGroup: Embed(source="ETC.swf", symbol="TGroup");
+	TGroupBD: Embed(source="ETC.swf", symbol="TGroupBD");
+	/* TimeSync: Embed(source="ETC.swf", symbol="TimeSync"); */
+	USPVM: Embed(source="ETC.swf", symbol="USPVM");
+	VTL: Embed(source="ETC.swf", symbol="VTL");
+	TapeLibrary: Embed(source="ETC.swf", symbol="TapeLibrary");
+	
+	/* MapRackSymbol: Embed(source="MapRackSymbol2.swf", symbol="MapRackSymbol2"); */
+	MapRackSymbol: Embed(source="MapRackSymbol.swf", symbol="MapRackSymbol");
+	MainSymbol: Embed(source="MainSymbol12.swf", symbol="MainSymbol12");
+	
+	/* AIRAP1242Fas */
+	AIRAP1242Fas: Embed(source="AIRAP1242Fas.swf", symbol="AIRAP1242Fas");
+	
+	/* Nokia */
+	NokiaIP1220: Embed(source="NokiaIP1220.swf", symbol="NokiaIP1220");
+	
+	/* Cisco  */
+	Cisco2621XM: Embed(source="Cisco.swf", symbol="Cisco2621XM");
+	CiscoCatalyst2950: Embed(source="Cisco.swf", symbol="CiscoCatalyst2950");
+	CiscoCatalyst2960: Embed(source="Cisco.swf", symbol="CiscoCatalyst2960");
+	CiscoCatalyst2970: Embed(source="Cisco.swf", symbol="CiscoCatalyst2970");
+	CiscoCatalyst3560: Embed(source="Cisco.swf", symbol="CiscoCatalyst3560");
+	CiscoCatalyst3750: Embed(source="Cisco.swf", symbol="CiscoCatalyst3750");
+	CiscoCatalyst4948: Embed(source="Cisco.swf", symbol="CiscoCatalyst4948");
+	Cisco3800: Embed(source="Cisco.swf", symbol="Cisco3800");
+	
+	NokiaFirewall: Embed(source="Nokia.swf", symbol="NokiaFirewall");
+	BigIP6400: Embed(source="BigIP6400.swf", symbol="BigIP6400");
+	COM3IPSTPM60: Embed(source="COM3IPSTPM60.swf", symbol="COM3IPSTPM60");
+	ProdWhite: Embed(source="ProdWhite.swf", symbol="ProdWhite");
+	ProdLarge: Embed(source="ProdLarge.swf", symbol="ProdLarge");
+	
+	/* 2010-09-10 추가*/
+	CiscoCatalyst4507R: Embed(source="Cisco.swf", symbol="CiscoCatalyst4507R");
+	CiscoCatalyst6509: Embed(source="Cisco.swf", symbol="CiscoCatalyst6509");
+	COM3IPS: Embed(source="COM3IPS.swf", symbol="COM3IPS");
+	
+	/*	jini*/
+	NGroup: Embed(source="NGroup.swf", symbol="NGroup");
+	DGroup: Embed(source="DGroup.swf", symbol="DGroup");
+}
+
+
+/**********************************************************
+/* 트리 아이콘
+/**********************************************************/
+.treeIcon{
+	SystemWin2k3:Embed("/assets/map/tree/ic_Win.png");
+	SystemHP:Embed("/assets/map/tree/ic_HP.png");
+	SystemIBM:Embed("/assets/map/tree/ic_ibm.png");
+	SystemSun:Embed("/assets/map/tree/ic_sun.png");
+	SystemDefault:Embed("/assets/map/tree/ic_question.png");
+		
+	rackEMC:Embed("/assets/map/tree/icMap_EMC.png");
+	rackHitach:Embed("/assets/map/tree/icMap_Hitach.png");
+	rackHP:Embed("/assets/map/tree/icMap_HP.png");
+	rackIBM:Embed("/assets/map/tree/icMap_IBM.png");
+	
+	rackSAN:Embed("/assets/map/tree/icMap_SAN.png");
+	rackSUN:Embed("/assets/map/tree/icMap_SUN.png");
+	rackWIN:Embed("/assets/map/tree/icMap_Win.png");
+	rackBACKUP:Embed("/assets/map/tree/icMap_Backup.png");
+
+	rackETC:Embed("/assets/map/tree/icMap_ETC.png");
+	/* infraGroup:Embed("/assets/map/tree/ic_question.png"); */
+	
+	infraGroup:Embed("/assets/map/tree/tree_infra.png");
+	
+	icGroup:Embed("/assets/map/tree/icMap_Group.png");
+	icNetwork:Embed("/assets/map/tree/icMap_nw.png");
+	icServer:Embed("/assets/map/tree/icMap_server.png");
+}

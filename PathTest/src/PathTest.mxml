@@ -53,6 +53,7 @@
 						poligon.stroke = new SolidColorStroke(0x000000);
 						poligon.fill = new SolidColor(0xEFEFEF);
 						this.addElement(poligon);
+						
 						d = "M " + this.mouseX + " " + this.mouseY;
 					} else {
 						
@@ -68,7 +69,7 @@
 					}
 					
 					if(!isEnd) {
-						var point:SpriteVisualElement = new SpriteVisualElement();
+						var point:Sprite = new Sprite();
 						point.addEventListener(MouseEvent.MOUSE_DOWN, pointDownHandler);
 						point.width = 6;
 						point.height = 6;
@@ -76,8 +77,10 @@
 						point.graphics.drawCircle(0, 0, 3);
 						point.x = this.mouseX;
 						point.y = this.mouseY;
-						this.addElement(point);
-						poligonPoints.push(point);
+						if(poligon.displayObject) {
+							poligon.displayObject.stage.addChild(point);
+							poligonPoints.push(point);
+						}
 					}
 					
 					poligon.data = d;

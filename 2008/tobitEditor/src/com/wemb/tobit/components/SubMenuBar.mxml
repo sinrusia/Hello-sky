@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Metadata>
+		[Event(name="subMenuClickEvent", type="com.wemb.tobit.events.MenuEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.puremvc.patterns.facade.Facade;
+			import com.wemb.puremvc.patterns.observer.Notification;
+			import com.wemb.tobit.components.buttons.NavigateSubButton;
+			import com.wemb.tobit.events.MenuEvent;
+			import com.wemb.tobit.pure.ApplicationFacade;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.pure.view.MainMediator;
+			import com.wemb.tobit.vo.MenuInfo;
+			import com.wemb.tobit.vo.PageInfo;
+			
+			import mx.collections.ArrayCollection;
+			
+			
+			//---------------------------------
+			// Variables
+			//---------------------------------
+			private var _menuList:ArrayCollection;
+			private var _isChangeMenu:Boolean = false;
+			private var _selected:Boolean = false;
+			private var currentPage:PageInfo;
+			
+			
+			//---------------------------------
+			// Setter / Getter
+			//---------------------------------
+			public function set menuList(value:ArrayCollection):void
+			{
+				_menuList = value;
+				_isChangeMenu = true;
+				
+				invalidateProperties();
+				commitProperties();
+			}
+			
+			public function get menuList():ArrayCollection
+			{
+				return this._menuList;
+			}
+			
+			public function get selected():Boolean
+			{
+				return _selected;
+			}
+			
+			public function set selected(value:Boolean):void
+			{
+				_selected = value;
+			}
+			
+			//---------------------------------
+			// Override
+			//---------------------------------
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if(_isChangeMenu)
+				{
+					_isChangeMenu = false;
+					
+					this.removeAllElements();
+					
+					if(_menuList)
+					{
+						for each(var menuInfo:MenuInfo in _menuList.source)
+						{
+							if (menuInfo.readYn == "Y") {
+								var nb:NavigateSubButton = createButton(menuInfo);
+								var mainMediator:MainMediator = Facade.getInstance().retrieveMediator(MainMediator.NAME) as MainMediator;
+								var cp:PageInfo = mainMediator.currentPageInfo;
+							}
+						}
+					}
+				}
+				
+			}
+			
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+			
+			
+			//---------------------------------
+			// function
+			//---------------------------------
+			/**
+			 * 서브 메뉴 생성
+			 * */
+			private function createButton(menuInfo:MenuInfo):NavigateSubButton
+			{
+				var button:NavigateSubButton = new NavigateSubButton();
+				
+				button.name		= menuInfo.id;
+				button.text		= menuInfo.name;
+				button.menuInfo	= menuInfo;
+				
+				button.addEventListener("btnClick", btnClickHandler);
+				
+				addElement(button);
+				return button;
+			}
+			
+			/**
+			 * 서브 메뉴 클릭
+			 * */
+			private function btnClickHandler(event:Event):void
+			{
+				if( selected )
+				{
+					NavigateSubButton(event.currentTarget).selected = false;
+				}
+				
+				var menuEvent:MenuEvent = new MenuEvent("subMenuClickEvent");
+				menuEvent.selectedMenu = NavigateSubButton(event.currentTarget).menuInfo;
+				dispatchEvent(menuEvent);
+				pageChange(NavigateSubButton(event.currentTarget).menuInfo);
+			}
+			
+			/**
+			 * 페이지 전환
+			 * */
+			private function pageChange(menuInfo:MenuInfo):void
+			{
+				menuInfo = MainMenuBar.getOpenPageMenu(menuInfo);
+				
+				var info:PageInfo	= new PageInfo();
+				info.menuId			= menuInfo.id;
+				info.url			= menuInfo.url;
+				info.pageType		= menuInfo.type;
+				info.menuName		= menuInfo.name;
+				info.initInfo		= menuInfo;
+				
+				var facade:ApplicationFacade = ApplicationFacade.getInstance();
+				facade.sendNotification(Notification.PAGE_CHANGE, info);
+			}
+		]]>
+	</fx:Script>
+</s:SkinnableContainer>

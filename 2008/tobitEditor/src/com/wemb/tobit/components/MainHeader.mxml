@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2004-2012 WeMB INC. 
+// All Rights Reserved.
+//
+//	@auther			: jaehag
+//	@description 	:
+//	
+/////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:components="com.wemb.tobit.components.*" 
+		 xmlns:ticker="com.wemb.tobit.components.ticker.*"
+		 creationComplete="topButton(event)">
+		
+	<s:states>
+		<s:State name="navigate"/>
+		<s:State name="ticker"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.wemb.puremvc.patterns.observer.Notification;
+			import com.wemb.tobit.caurina.transitions.Tweener;
+			import com.wemb.tobit.core.ApplicationConfig;
+			import com.wemb.tobit.managers.HistoryManager;
+			import com.wemb.tobit.pure.ApplicationFacade;
+			import com.wemb.tobit.pure.Constants;
+			import com.wemb.tobit.utils.Util;
+			import com.wemb.tobit.vo.MenuInfo;
+			import com.wemb.tobit.vo.PageInfo;
+			import com.wemb.tobit.vo.RTMPStatus;
+			import com.wemb.tobit.vo.User;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.effects.Glow;
+			import mx.effects.Move;
+			import mx.effects.Sequence;
+			import mx.events.CloseEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.managers.SystemManager;
+			import spark.components.Button;
+			
+			
+			//---------------------------------------------------------------
+			//
+			// Variables
+			//
+			//---------------------------------------------------------------
+			
+			/**
+			 * Ticker 리스트
+			 */
+			[Bindable]
+			private var _tickerList:ArrayCollection;
+			
+			/**
+			 * Ticker 변경 여부 체크 플래그
+			 */
+			private var _isChangeTicker:Boolean = false;
+			
+			/**
+			 * UserMenu List
+			 */
+			private var _menuList:ArrayCollection;
+			
+			/**
+			 * This is a check-value whether it is changed or not
+			 */
+			private var _isChangeMenu:Boolean  = false;
+			
+			/**
+			 * init PageInfo
+			 */
+			private var _initPageInfo:MenuInfo;
+			
+			/**
+			 * This is a check-value whether it is changed or not
+			 */
+			private var _changedInitPageInfo:Boolean = false;
+			
+			/**
+			 * This is a timer for controling navigate-panel and ticker-panel
+			 */
+			private var naviCheckTimer:Timer;
+			
+			/**
+			 * This is a check value for doing page-change
+			 */
+			private var isRotator:Boolean = false;
+			
+			private var timer:Timer;
+			
+			private var rotateList:Array;
+			
+			private var count:Number = 0;
+			
+			private var showTicker:Sequence;
+			
+			private var showNavigate:Sequence;
+			
+			private var glow:Glow;
+			
+			private var unGlow:Glow;
+			[Bindable] private var logo:Class;
+			
+			[Embed(source="/assets/buttons/btn_closeUp.png")]
+			[Bindable] private var logoutUp:Class;
+			[Embed(source="/assets/buttons/btn_closeOver.png")]
+			[Bindable] private var logoutOver:Class;
+			
+			[Embed(source="/assets/buttons/btn_nextUp.png")]
+			[Bindable] private var nextUp:Class;
+			[Embed(source="/assets/buttons/btn_nextOver.png")]
+			[Bindable] private var nextOver:Class;
+			
+			[Embed(source="/assets/buttons/btn_preUp.png")]
+			[Bindable] private var preUp:Class;
+			[Embed(source="/assets/buttons/btn_preOver.png")]
+			[Bindable] private var preOver:Class;
+			
+			//---------------------------------------------------------------
+			//
+			// Override
+			//
+			//---------------------------------------------------------------
+			override protected function createChildren():void {
+				super.createChildren();
+				
+				var timeTimer:Timer = new Timer(999);
+				timeTimer.addEventListener( TimerEvent.TIMER, clockProc );
+				timeTimer.start();
+			}
+			
+			override protected function commitProperties():void {
+				super.commitProperties();
+				
+				if ( _isChangeTicker ) {
+					_isChangeTicker = false;
+					//ticker.messages = _tickerList;
+					/*
+					for( var i:int = 0; i < _tickerList.length; i++ )
+					trace( "tickerList : textpart  ", _tickerList[i].text_part );
+					*/	
+				}
+				
+				if( _isChangeMenu ) {
+					_isChangeMenu = false;
+					mainMenuBar.menuList = _menuList;
+				}
+				
+				if(_changedInitPageInfo) {
+					_changedInitPageInfo = false;
+					mainMenuBar.initPageProc(_initPageInfo);
+				}
+				
+				//txtClock.text = dfromat.format(new Date());
+			}
+			
+			override public function styleChanged(styleName:String):void {
+				super.styleChanged(styleName);
+				logo = Util.GetCSSResource("TobitLogo", "logo") as Class;
+			}
+			
+			//-------------------------------------------------------
+			// Functions
+			//-------------------------------------------------------
+			public function viewTicker():void {
+				if( showTicker ) {
+					showTicker.play();
+				}
+			}
+			
+			//환경설정에 대한 처리 메서드
+			public function configurationHandler():void {
+				
+				btn_pre.includeInLayout = false;
+				btn_pre.visible = false;
+				btn_next.includeInLayout = false;
+				btn_next.visible = false;
+				btn_logout.includeInLayout = false;
+				btn_logout.visible = false;
+				
+				//identimage2 로고 이미지 
+				var logoImage:String = getApplicationConfig("IDENTT_IMAGE2");
+				if (logoImage != null) {
+					identImage.source="uploadFiles/"+logoImage;
+				}
+				
+				// identText2 텍스트
+				var identText2:String = getApplicationConfig("IDENTT_TEXT2");
+				if (identText2 != null) {
+					identText.text = identText2;
+				}
+				
+				//디자인 설정 날짜 표시 설정
+				var datevisible:String = getApplicationConfig("DATE_VISIBLE");
+				if (datevisible == "visible") {
+					txtClock.visible = true
+					txtClock.includeInLayout = true
+				} else if (datevisible == "invisible" || datevisible == null) {
+					txtClock.visible = false
+					txtClock.includeInLayout = false
+				}
+				
+				// topMenuButton 배열에 ApplicationConfig에 설정을 가져와 활성 비활성
+				var topMenuButton:Array = getApplicationConfig("APP_TOPBUTTON").split(',');
+				// top
+				var topMenuButtonLength:int = topMenuButton.length;
+				//모든 버튼을 체크 안했을시에는 null값 저장
+				for (var i:int=0; i<topMenuButtonLength; i++) {
+					switch(topMenuButton[i]) {
+						//페이지 뒤로 
+						case "ch1" :
+							setButton(btn_pre);
+							break;
+						//페이지 앞으로 
+						case "ch2" :
+							setButton(btn_next);
+							break;
+						//로그아웃
+						case "ch3" :
+							setButton(btn_logout);
+							break;
+						default :
+							break;
+					}
+				}
+			}
+			
+			/**
+			 * applicationConfig 처리에 대한 소스 간결화
+			 */
+			private function getApplicationConfig(value:String):String {
+				return ApplicationConfig.getInstance().getAttribute(value) as String;
+			}
+			
+			/**
+			 * topMenuButton에서 pop()으로 배열에서 꺼낸 값에 따라서 버튼을 비활성화
+			 */
+			private function setButton(button:Image):void {
+				button.includeInLayout = true;
+				button.visible = true;
+			}
+			
+			/**
+			 * This function is doing logout process
+			 */
+			private function logout():void {
+				Alert.yesLabel = "예";
+				Alert.noLabel  = "아니오";
+				Alert.show("로그아웃 하시겠습니까?", "알림", Alert.YES|Alert.NO, hitArea, logoutHandler);
+			}
+			
+			private function logoutHandler(event:CloseEvent):void {
+				if ( event.detail == Alert.YES ) {
+					ApplicationFacade.getInstance().sendTobitService(Constants.LOGOUT);
+				}
+			}
+			
+			private function prev():void {
+				ApplicationFacade.getInstance().sendNotification(Notification.PAGE_CHANGE, 
+					HistoryManager.getInstance().getHistory(), "down");
+				
+				callLater(naviUpdate);
+			}
+			
+			private function next():void {
+				ApplicationFacade.getInstance().sendNotification(Notification.PAGE_CHANGE, 
+					HistoryManager.getInstance().getNext(), "up");
+				
+				callLater(naviUpdate);
+			}
+			
+			private function naviUpdate():void {
+				var curPageInfo:PageInfo = HistoryManager.getInstance().getCurrentPageInfo();
+				var curMenuInfo:MenuInfo = ApplicationConfig.getInstance().getMenuInfo(curPageInfo.menuId);
+				
+				mainMenuBar.menuNavigation.reset();
+				
+				if ( curMenuInfo != null ) {
+					mainMenuBar.checkNavigate(curMenuInfo);	
+				}
+			}
+			
+			private function upLev():void {
+				//[kojh]2009.03.09
+				
+				// 리스트 생성
+				//메뉴처리
+				var list:ArrayCollection = ApplicationConfig.getInstance().rotateInfo;
+				
+				rotateList = new Array();
+				
+				for (var i:int = 0; i < list.length; i++) {
+					
+					var item:Object = list.getItemAt(i);
+					/*
+					if(UserInfo.getInstance().access_menu.indexOf(item.menu_id) != -1){
+					
+					var info:PageInfo = new PageInfo();
+					info.mainPageId = item.menu_id;
+					//info.subPageId = "page001";
+					info.delay = item["menu_rotate_time"];
+					rotateList.push(info);
+					}
+					*/
+				}
+				
+				//[kojh]2009.03.09
+				if ( timer == null ) {					
+					timer = new Timer(2000);
+					timer.addEventListener(TimerEvent.TIMER, timerHandler);
+					timer.start();
+				}
+				
+				if ( isRotator ) {
+					isRotator = false;
+					//btn_host.styleName = "upButton";
+				} else {
+					isRotator = true;
+					//btn_host.styleName = "upButtonSelected";
+				}
+			}
+			
+			private function bmsAdmin():void {
+				var pageinfo:PageInfo = new PageInfo();
+				pageinfo.url = "Page9901";
+				
+				ApplicationFacade.getInstance().sendNotification(Notification.PAGE_CHANGE, pageinfo);				
+			}
+			
+			private function timerHandler(event:TimerEvent):void {
+				if ( isRotator ) {
+					timer.stop();
+					
+					var index:Number = count % rotateList.length;
+					var pageinfo:PageInfo = rotateList[index] as PageInfo;
+					
+					if ( pageinfo ) {
+						ApplicationFacade.getInstance().sendNotification(Notification.PAGE_CHANGE, pageinfo);
+						count++;
+						timer.delay = (pageinfo.delay * 1000);
+					}
+					timer.start();
+				}
+				trace("memory:"+System.totalMemory);
+			}
+			private function manager():void {
+				var info:PageInfo	= new PageInfo();
+				info.url			= "manager";
+				info.pageType		= "P1200";
+				
+				var facade:ApplicationFacade = ApplicationFacade.getInstance();
+				facade.sendNotification(Notification.PAGE_CHANGE, info);
+			}
+			
+			private var preMinutes:Number = 0;
+			private var preHour:Number = 0;
+			
+			/**
+			 * 시계 타이머 처리 핸들러
+			 */
+			private function clockProc(event:TimerEvent):void {
+				var current:Date = new Date();
+				//디자인 설정 날짜 스킨 표시 설정
+				var dateForm:String = ApplicationConfig.getInstance().getAttribute("DATE_FORM") as String;
+				if (dateForm == "date1") {
+					txtClock.text = timeFormatter01.format(current);
+				} else if (dateForm =="date2") {
+					txtClock.text = timeFormatter02.format(current);
+				}
+				if(preMinutes != current.minutes) {
+					ApplicationFacade.getInstance().sendNotification(Constants.ALARM_1MINUTE);
+				}
+				
+				if(preHour != current.hours) {
+					ApplicationFacade.getInstance().sendNotification(Constants.ALARM_1HOUR);
+				}
+				
+				preMinutes = current.minutes;
+				preHour = current.hours;
+			}
+			
+			private function getImage():void {
+				ExternalInterface.call("onChangPW", user.userId, ApplicationConfig.getInstance().locale);
+			}
+			
+			private function alertClose(evt:CloseEvent):void {
+				if ( evt.detail == Alert.YES ) {
+					ApplicationFacade.getInstance().sendNotification(Constants.PRINT_SCREEN);
+				}
+			}
+			
+			public function naviCheckHandler(e:MouseEvent = null):void {
+				var p:Point = this.localToGlobal(new Point(mouseX, mouseY));
+				
+				if(mainMenuBar.hitTestPoint(p.x, p.y) == false ) {
+					mainMenuBar.naviClose("Y");
+				}
+			}
+			
+			private function tickerClickEvent(e:MouseEvent):void {
+				if(currentState != "ticker") {
+					ApplicationFacade.getInstance().sendNotification(Constants.NAVI_CLOSE_EVENT);
+					Tweener.addTween(mainMenuBar.naviBtn,{time:0.7, y:-89, transition:"easeOutQuint"});
+					Tweener.addTween(box_Ticker,{time:0.7, y:0, transition:"easeOutQuint"});
+					mainMenuBar.naviClose("Y");
+					ticker.play();
+					currentState = "ticker";
+				} else {
+					Tweener.addTween(mainMenuBar.naviBtn,{time:0.7, y:7, transition:"easeOutQuint"});
+					Tweener.addTween(box_Ticker,{time:0.7, y:-56, transition:"easeOutQuint"});
+					ticker.stop();
+					currentState = "navigate";
+				}
+			}
+			
+			//---------------------------------------------------------------
+			// 
+			//   properties
+			//
+			//---------------------------------------------------------------
+			
+			private var _user:User;
+			
+			public function get user():User {
+				return _user;
+			}
+			
+			public function set user(value:User):void {
+				_user = value;
+			}
+			
+			public function set tickerList(value:ArrayCollection):void {
+				_tickerList = value;
+				_isChangeTicker = true;
+				
+				invalidateProperties();
+			}
+			
+			public function get tickerList():ArrayCollection {					 
+				return this._tickerList;
+			}
+			
+			public function set menuList(value:ArrayCollection):void {
+				_menuList = value;
+				_isChangeMenu = true;
+				invalidateProperties();
+			}
+			
+			public function get menuList():ArrayCollection {
+				return this._menuList;
+			}
+			
+			public function set initPageInfo(value:MenuInfo):void {
+				this._initPageInfo = value;
+				_changedInitPageInfo = true;
+				invalidateProperties();
+			}
+			
+			public function get initPageInfo():MenuInfo {
+				return this._initPageInfo;
+			}
+			
+			public function set rtmpStatus( value:RTMPStatus ):void {
+				
+			}
+			protected function topButton(event:FlexEvent):void {
+				var createImage:Image = new Image();
+			}
+		]]>
+		
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:DateFormatter id="timeFormatter01" formatString="YYYY-MM-DD JJ:NN:SS"/>
+		<mx:DateFormatter id="timeFormatter02" formatString="YYYY년 MM월 DD일 JJ시 NN분 SS초"/>
+	</fx:Declarations>
+	
+	<!-- 메뉴-->
+	<s:Group id="box_Navigate" width="100%">
+		<components:MainMenuBar id="mainMenuBar" width="100%" height="89" />
+	</s:Group>
+	
+	<!-- CI -->
+	<s:Image id="identImage" left="5" top="5" width="160" height="60" horizontalAlign="left" />
+	<s:Label id="identText" left="165" top="52" styleName="configCatalogItemLabel" verticalAlign="bottom"/>
+	<!-- Ticker -->
+	<s:Group id="box_Ticker" width="813" height="56" horizontalCenter="0" y="-56">
+		<ticker:TickerMain id="ticker" width="750" height="100%" x="58" y="5"
+						   messages="{_tickerList}" buttonMode="true"/>
+	</s:Group>
+	
+	<!-- Application controller button -->
+	<s:HGroup right="41" top="21" id="topBtn">
+		<s:Image id="btn_pre" source="@Embed(source='/assets/buttons/btn_preUp.png')" buttonMode="true" toolTip="뒤로" click="prev()"
+				 rollOver="{event.currentTarget.source = preOver}" rollOut="{event.currentTarget.source = preUp}" 
+				 includeInLayout="false" visible="false"/>
+		<s:Image id="btn_next" source="@Embed(source='/assets/buttons/btn_nextUp.png')" buttonMode="true" toolTip="앞으로" click="next()"
+				 rollOver="{event.currentTarget.source = nextOver}" rollOut="{event.currentTarget.source = nextUp}" 
+				 includeInLayout="false" visible="false"/>
+		<s:Image id="btn_logout" source="@Embed(source='/assets/buttons/btn_closeUp.png')" buttonMode="true" toolTip="Logout" click="logout()"
+				 rollOver="{event.currentTarget.source = logoutOver}" rollOut="{event.currentTarget.source = logoutUp}" 
+				 includeInLayout="false" visible="false"/>
+	</s:HGroup>
+	
+	<!-- Application Information label -->
+	<s:HGroup top="0" right="50" verticalAlign="baseline">
+		<s:Label id="txtUserName" fontSize="14" fontWeight="bold" color="#ededed"/>
+		<s:Label id="txtClock" fontFamily="Dinbol" fontSize="15" color="#ededed"/>
+	</s:HGroup>
+	
+</s:Group>
