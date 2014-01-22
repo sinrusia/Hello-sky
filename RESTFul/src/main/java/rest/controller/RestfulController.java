@@ -25,16 +25,26 @@ import rest.bean.Person;
 @ResponseStatus(value = HttpStatus.ACCEPTED)
 public class RestfulController {
 
-	
+	/**
+	 * 사용자 정보 조회
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/person", method=RequestMethod.GET)
 	public @ResponseBody List<Person> getPersons(ModelMap model) {
 		List<Person> persons = new ArrayList<Person>();
-		persons.add(new Person("aaaa"));
-		persons.add(new Person("bbbb"));
-		persons.add(new Person("cccc"));
+		persons.add(new Person("Sky"));
+		persons.add(new Person("Ronardo"));
+		persons.add(new Person("ki"));
 		return persons;
 	}
 
+	/**
+	 * 삭제
+	 * @param id
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/person/{id}", method=RequestMethod.DELETE)
 	public String deletePerson(@PathVariable("id") String id, ModelMap model) {
 		model.addAttribute("id", id);
@@ -42,26 +52,29 @@ public class RestfulController {
 		return "delete";
 	}
 	
+	/**
+	 * 등록
+	 * @param obj
+	 * @return
+	 */
 	@RequestMapping(value="/person", method=RequestMethod.POST)
 	public @ResponseBody Person createPerson(@RequestBody Map obj) {
 		Person newPerson = new Person();
 		return newPerson;
 	}
 	
+	/**
+	 * 업데이트
+	 * @param id
+	 * @param obj
+	 * @return
+	 */
 	@RequestMapping(value="/person/{id}", method=RequestMethod.PUT)
 	public @ResponseBody Person updatePerson(@PathVariable("id") String id, @RequestBody Map obj) {
 		Person updatePerson = new Person();
 		updatePerson.setId(id);
 		updatePerson.setName((String)obj.get("name"));
 		return updatePerson;
-	}
-	
-	@RequestMapping(value="/messagebody/{message}", method=RequestMethod.GET)
-	@ResponseBody
-	public Body getMessageBody(@PathVariable String message, ModelMap model) {
-		Body body = new Body();
-		body.setMessage(message);
-		return body;
 	}
 	
 	@RequestMapping(value="/exception", method=RequestMethod.GET)

@@ -29,7 +29,6 @@
 		},
 		
 		addHandle: function(person) {
-			console.log(person);
 			var listItem = new ListItem({model:person});
 			$(this.el).append(listItem.render().el);
 		},
@@ -41,29 +40,22 @@
 					delete removedBookData[key];
 				}
 			});
-			
-			console.log('remove');
-			console.log(removedBook.get('name'));
 		},
 		
 		resetHandle: function() {
-			console.log('resetHandle');
 		},
 		
 		postProc: function(e) {
 			e.preventDefault();
-			this.collection.create({name:'Go Jae Hag'});	
-			console.log('postProc');
+			this.collection.create({name:'new name'});	
 		},
 		
 		getProc: function(e) {
 			e.preventDefault();
-			console.log('getProc');
 		},
 		
 		deleteProc: function(e) {
 			e.preventDefault();
-			console.log('delete');
 			var m = this.collection.at(0);
 			console.log(m);
 			m.destroy();
@@ -99,7 +91,6 @@
 		},
 		
 		destroyItem: function() {
-			console.log('destroy');
 			this.model.destroy();
 			this.remove();
 		}
