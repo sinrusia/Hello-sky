@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			import popup.MyPopupManager;
+			
+			import spark.components.Button;
+			
+			public function addWorkItem(id:String, title:String):void {
+				var button:Button = new Button();
+				button.name = id;
+				button.label = title;
+				button.addEventListener(MouseEvent.CLICK, workClickHandler);
+				workContainer.addElement(button);
+			}
+			
+			protected function workClickHandler(event:MouseEvent):void
+			{
+				var id:String = event.currentTarget.name;
+				MyPopupManager.returnPopup(id);
+				workContainer.removeElement(event.currentTarget as Button);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group top="0" bottom="0" left="0" right="0">
+		<s:Rect top="0" bottom="0" left="0" right="0">
+			<s:stroke>
+				<s:SolidColorStroke color="0"/>
+			</s:stroke>
+		</s:Rect>
+	</s:Group>
+	
+	<s:HGroup id="workContainer" top="0" bottom="0" left="0" right="0">
+		
+	</s:HGroup>
+	
+</s:Group>

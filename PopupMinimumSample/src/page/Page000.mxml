@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import popup.MyPopup01;
+			import popup.MyPopup02;
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				var popup01:MyPopup01 = PopUpManager.createPopUp(this, MyPopup01) as MyPopup01;
+				PopUpManager.centerPopUp(popup01);
+				
+			}
+			
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				var popup02:MyPopup02 = PopUpManager.createPopUp(this, MyPopup02) as MyPopup02;
+				PopUpManager.centerPopUp(popup02);
+			}
+			
+			protected function closeHandler(event:Event):void {
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:Button click="button1_clickHandler(event)" label="open01"/>
+	
+	<s:Button click="button2_clickHandler(event)" label="open02"/>
+	
+</s:Group>
