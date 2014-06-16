@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="2" paddingTop="2">
-	
-	<mx:Image source="@Embed(source='assets/main/Hbar.png')"/>
-	
-</mx:VBox>
