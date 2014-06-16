@@ -46,10 +46,10 @@ public class RestfulController {
 	 * @return
 	 */
 	@RequestMapping(value="/person/{id}", method=RequestMethod.DELETE)
-	public String deletePerson(@PathVariable("id") String id, ModelMap model) {
-		model.addAttribute("id", id);
-		model.addAttribute("message", "delete method");
-		return "delete";
+	public @ResponseBody Person deletePerson(@PathVariable("id") String id, ModelMap model) {
+		Person deletePerson = new Person();
+		deletePerson.setId(id);
+		return deletePerson;
 	}
 	
 	/**
