@@ -10,24 +10,22 @@ first repository
   - TEST03_Scale : 이미지 색과 스케일 값을 조정하여 테스트하는 샘플
   - TEST04_Search : KMP알고리즘을 이용한 검색 샘플, BM 알고리즘을 이용한 검색 샘플.
 
-* 2011
+* JHComponent : Flex 3.0 DataGrid 확장한 컴포넌트
 
-* DragTile
+* PathTest : Flex Path 컴포넌트 테스트
 
-* JHComponent
+* PopupMinimumSample : 플랙스를 이용한 팝업 최소화, 최대화 샘플
 
-* PathTest
+* RESTFul : BackboneJS + RESTFul + Spring MVC 를 이용한 프로젝트 템플릿.
 
-* PopupMinimumSample
+* SkinTest :
 
-* RESTFul
+* books : 책에 나온 내용을 정리한 프로젝트 모음.
+  - tdd : 테스트 주도 개발
+  - toby_spring : 토비의 스프링 3.0
 
-* SkinTest
+* flex :
 
-* books
+* myMVC :
 
-* flex
-
-* myMVC
-
-* openAMF
+* openAMF :
