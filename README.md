@@ -30,4 +30,4 @@ first repository
   - Strignt :
   - reflection : Java Reflection과 같은 기능을 플렉스로 구현하였다.
 
-* openAMF :
+* htdocs : backboneJS를 이용한 예제 (오목, todo)
