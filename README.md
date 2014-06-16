@@ -24,8 +24,10 @@ first repository
   - tdd : 테스트 주도 개발
   - toby_spring : 토비의 스프링 3.0
 
-* flex :
-
-* myMVC :
+* flex : Flex 테스트 샘플들
+  - ReflectionExplorer : 거울과같은 반사 효과를 플랙스 BitmapData를 이용하여 구현
+  - SpinningMoon :
+  - Strignt :
+  - reflection : Java Reflection과 같은 기능을 플렉스로 구현하였다.
 
 * openAMF :
