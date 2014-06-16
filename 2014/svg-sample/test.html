@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head lang="utf-8">
+</head>
+<body>
+
+<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xlinkns="http://www.w3.org/1999/xlink" 
+	 width="640" height="480" x="640" y="480" overflow="visible">
+	 <defs>
+	 	<filter id="canvasshadow" filterUnits="objectBoundingBox">
+	 		<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+	 		<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>
+	 		<feMerge>
+	 			<feMergeNode in="offsetBlur"/>
+	 			<feMergeNode in="SourceGraphic"/>
+	 		</feMerge>
+	 	</filter>
+	 </defs>
+
+</svg>
+
+<input type="button" value="1" id="btn1"/>
+
+<input type="button" value="2" id="btn2"/>
+
+<script src="jquery.js"></script>
+  
+  <script type="text/javascript">
+  (function(){
+  	var Editor = {};
+  	
+  	Editor.init = function() {
+	  	var testFunction = function() {
+		  	alert('variable');
+	  	};
+	  	
+	  	function fnTest() {
+		  	alert('function');
+	  	}
+	  	
+	  	$('#btn1').click(function(){
+		  	testFunction();
+	  	});
+	  	
+	  	$('#btn2').click(function(){
+		  	fnTest();
+	  	});
+  	};
+  	
+  	Editor.init();
+  	//$(Editor.init);
+  }
+  )();
+
+  </script>
+</body>
+</html>

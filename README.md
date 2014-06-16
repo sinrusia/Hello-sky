@@ -10,6 +10,11 @@ first repository
   - TEST03_Scale : 이미지 색과 스케일 값을 조정하여 테스트하는 샘플
   - TEST04_Search : KMP알고리즘을 이용한 검색 샘플, BM 알고리즘을 이용한 검색 샘플.
 
+* 2014 : 2014년도 위엠비 퇴사전에 정리한 소스
+  - svg-sample : svg 관련 샘플들.  svg-editor 포함되어 있음.
+  - canvg : svg sample
+  - mxgraph : svg editor
+
 * JHComponent : Flex 3.0 DataGrid 확장한 컴포넌트
 
 * PathTest : Flex Path 컴포넌트 테스트

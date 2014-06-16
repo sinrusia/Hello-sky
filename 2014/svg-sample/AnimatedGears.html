@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<style>
+#bg {
+	fill: none;
+	stroke: black;
+	stroke-dasharray: 10 5;
+}
+</style>
+</head>
+<body>
+<div align="center">
+	<div style="margin-bottom: 8px;">
+		<button id="startButton" type="button" onclick="startAnim();">
+		Start Animation
+		</button>
+	</div>
+	<svg id="svgElement" width="800px" height="800px" viewBox="0 0 800 800">
+		<rect id="bg" x="0" y="0" width="100%" height="100%" rx="16" ry="16"/>
+		
+		<defs>
+			<g id="gearTemplate">
+				<circle cx="0" cy="0" r="150" style="stroke:black;"/>
+				<line x1="0" y1="-150" x2="0" y2="150" style="stroke:white;"/>
+				<line x1="-150" y1="0" x2="150" y2="0" style="stroke:white;"/>
+				<line x1="0" y1="0" x2="150" y2="0" style="stroke:darkGreen;"/>
+			</g>
+		</defs>
+		
+		<g transform="translate(400, 400)">
+			<use id="gear0" x="-150" y="0" xlink:href="#gearTemplate" style="fill:orange;"/>
+			<use id="gear1" x="150" y="0" xlink:href="#gearTemplate" style="fill:mediumPurple;"/>
+		</g>
+	</svg>
+
+</div>
+<script type="text/javascript">
+	var initialTheta = 0;
+	var currentTheta = initialTheta;
+	var thetaDelta = 0.3;
+	var delay = 10;
+	var angularLimit = 360;
+	
+	var timer;
+	
+	function init() {
+		var transformObject = svgElement.createSVGTransform();
+		//gear0.transform.baseVal.appendItem(transformObject);
+		gear1.transform.baseVal.appendItem(transformObject);
+	}
+	
+	function startAnim() {
+		if(!startButton.startButtonClicked) {
+			timer = setInterval(doAnim, delay);
+			startButton.startButtonClicked = true;
+		}
+	}
+	
+	function doAnim() {
+		if (currentTheta > angularLimit) {
+			clearInterval(timer);
+			startButton.startButtonClicked = false;
+			currentTheta = initialTheta;
+		}
+		
+		//gear0.transform.baseVal.getItem(0).setRotate(currentTheta, -150, 0);
+		gear1.transform.baseVal.getItem(0).setRotate(-currentTheta, 150, 0);
+		
+		currentTheta += thetaDelta;
+	}
+</script>
+</body>
+</html>

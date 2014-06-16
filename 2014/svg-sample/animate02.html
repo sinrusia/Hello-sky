@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+<svg width="800" height="800" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<style>
+	rect {
+		fill:orange;
+		stroke:black;
+		stroke-width:3;
+		stroke-dasharray:10, 5;
+	}
+	
+	line {
+		stroke: black;
+	}
+</style>
+<desc>SVG delarative animation is used to rotate a sqare.</desc>
+	<g transform="translate(400,400)">
+		<rect id="mySquare" x="-100" y="-100" width="200" height="200" rx="5" ry="5">
+		</rect>
+		
+		<line x1="-400" y1="0" x2="400" y2="0"/>
+		
+		<line x1="0" y1="-400" x2="0" y2="400"/>
+	</g>
+</svg>
+
+<script type="text/javascript">
+var initialTheta = 0;
+var thetaDelta = 0.3;
+var delay = 10;
+var angularLimit = 360;
+
+var theSquare;
+var timer;
+
+function init() {
+	theSquare = document.getElementById("mySquare");
+	theSquare.currentTheta = initialTheta;
+	timer = setInterval(doAnim, delay);
+}
+
+function doAnim() {
+	if(theSquare.currentTheta > angularLimit)
+	{
+		clearInterval(timer);
+		return;
+	}
+	
+	theSquare.setAttribute("transform", "rotate(" + theSquare.currentTheta + ")");
+	theSquare.currentTheta += thetaDelta;
+}
+
+init();
+</script>
+</body>
+</html>

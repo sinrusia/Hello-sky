@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+	<title>SVG Animation - Circle Translation</title>
+	
+	<style>
+	rect{
+		fill:white;
+		stroke:black;
+	}
+	circle{
+		fill:orange;
+		stroke:black;
+		stroke-width:1;
+	}
+	</style>
+	
+	<script type="text/javascript">
+		var timer;
+		var delay = 16;
+		
+		function s2d(s) {
+			return (s / 1000) * delay;
+		}
+		
+		function init() {
+			svgElement = document.getElementById("svgElement");
+			circle0 = document.getElementById("circle0");
+			timer = setInterval(doAnim, delay);
+			
+			circle0.vx = 150;
+			circle0.vy = 80;
+		}
+		
+		function doAnim() {
+			var r = circle0.r.baseVal.value;
+			var boxWidth = svgElement.width.baseVal.value;
+			var boxHeight = svgElement.height.baseVal.value;
+			
+			circle0.cx.baseVal.value += s2d(circle0.vx);
+			circle0.cy.baseVal.value += s2d(circle0.vy);
+			
+		}
+	</script>
+</head>
+<body onload="init()">
+	<svg id="svgElement" width="800px" height="600px" viewBox="0 0 800 600">
+		<rect x="0" y="0" width="100%" height="100%" rx="10" ry="10"/>
+		<circle id="circle0" cx="40" cy="40" r="40"/>
+	</svg>
+</body>
+</html>

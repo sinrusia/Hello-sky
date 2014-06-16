@@ -1,0 +1,22 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+
+	<script type="text/javascript">
+	(function(){
+		console.log("run..");
+	})();
+	</script>
+  <defs>
+    <linearGradient id="Gradient">
+      <stop offset="0" stop-color="white" stop-opacity="0" />
+      <stop offset="1" stop-color="white" stop-opacity="1" />
+    </linearGradient>
+  </defs>
+  
+  <path d="M 50 50 l 100 0 l 0 -3 l -100 0"/>
+  
+    <path d="M 160 49.5 l 100 0 l 0 -3 l -100 0"/>
+ 
+  <path d="M 310 50 l 100 0 l 0 -4 l -100 0"/> 
+
+</svg>

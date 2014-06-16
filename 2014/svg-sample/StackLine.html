@@ -1,0 +1,250 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>process line</title>
+	<style type="text/css">
+	body{
+		background-color: #90c79a;
+	}
+	</style>
+</head>
+
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700">
+	 <defs>
+		<clipPath id="clipping">
+			<path id="clipPath" d="M 0 0 L 100 100 L 104 100 L 4 0 " stroke-width="0" stroke="black" fill="black"/>
+		</clipPath>
+	</defs>
+
+
+	 <g id="canvas" 
+	    width="100%" height="100%">
+	    <rect x="0" y="0" width="100%" height="100%" fill="white"/>
+	    
+	    <path id="line" stroke-width="0" fill="red"/>
+	    
+	 </g>
+	 
+</svg>
+
+<script type="text/javascript">
+(function(){
+	// add event listener
+	
+	var lineWidth = "9";
+	
+	var linePoints = new Array();
+	
+	var upathPoints = new Array();
+	
+	var dpathPoints = new Array();
+	
+	var queueItems = new Array();
+	
+	var canvas = document.getElementById("canvas"),
+		ns = "http://www.w3.org/2000/svg"
+		line = document.getElementById("line");
+	
+		var distance = 0;
+	var movingDistance = 0;
+	var section = 0;
+	var waitCount = 0;
+
+	var count = 0;
+
+	canvas.addEventListener("mousedown", downHandler);
+	
+	
+	function downHandler(event) {
+		console.log(event);
+		var circle = document.createElementNS(ns, 'circle');
+		circle.setAttributeNS(null, "cx", event.offsetX);
+		circle.setAttributeNS(null, "cy", event.offsetY);
+		circle.setAttributeNS(null, "r",  10);
+		circle.setAttributeNS(null, "fill", "green");
+		
+		linePoints.push({x:event.offsetX, y:event.offsetY});
+		
+		upathPoints = new Array();
+		dpathPoints = new Array();
+		
+		calcPathPoints();
+		
+		d = undefined;
+		for(var j = 0; j < upathPoints.length; j++){
+			if(d === undefined || d === "") {
+				d = "M " + upathPoints[j].x + "," + upathPoints[j].y;
+			} else {
+				d += " L " + upathPoints[j].x + "," + upathPoints[j].y;
+			}
+			
+		}
+		
+		for(var k = 0; k < dpathPoints.length; k++){
+			d += " L " + dpathPoints[k].x + "," + dpathPoints[k].y;
+		}
+		
+		if (d != undefined) {
+			line.setAttributeNS(null, 'd', d);
+			clipPath.setAttributeNS(null, 'd', d);
+		}
+		
+		console.log(d);
+		
+		function calcPathPoints(){
+			if(linePoints.length > 1) {
+				var prePoint = linePoints[0];
+				var curPoint;
+				var distX, distY;
+				var uwidth, dwidth;
+				
+				uwidth = dwidth = parseInt(lineWidth / 2);
+				
+				if((lineWidth / 2) === 1) {
+					uwidth++;
+				}
+				for(var i = 1; i < linePoints.length; i++) {
+					curPoint = linePoints[i];
+					console.log("i=" + i);
+					console.log(prePoint.x + ":" + prePoint.y);
+					console.log(curPoint.x + ":" + curPoint.y);
+					
+					distX = curPoint.x - prePoint.x;
+					distY = curPoint.y - prePoint.y;
+					
+					var radian = Math.atan2(distY, distX);
+					
+					var ur = radian - (Math.PI / 2);
+					
+					var dr = radian + (Math.PI / 2);
+					
+					var sux = prePoint.x + Math.cos(ur) * uwidth;
+					var suy = prePoint.y + Math.sin(ur) * uwidth;
+					
+					var sdx = prePoint.x + Math.cos(dr) * dwidth;
+					var sdy = prePoint.y + Math.sin(dr) * dwidth;
+					
+					
+					var eux = curPoint.x + Math.cos(ur) * uwidth;
+					var euy = curPoint.y + Math.sin(ur) * uwidth;
+					
+					var edx = curPoint.x + Math.cos(dr) * dwidth;
+					var edy = curPoint.y + Math.sin(dr) * dwidth;
+					
+					console.log("x:" + sux + ",y:" + suy);
+					console.log("x:" + eux + ",y:" + euy);
+					
+					upathPoints.push({x:sux,y:suy});
+					upathPoints.push({x:eux,y:euy});
+					
+					dpathPoints.unshift({x:sdx,y:sdy});
+					dpathPoints.unshift({x:edx,y:edy});
+					
+					prePoint = curPoint;
+					
+				}
+			}
+		}
+	}
+	
+	function moveBar() {
+		if(linePoints.length > 1) {
+			waitCount = 0;
+			for (var i = 0; i < queueItems.length; i++) {
+			
+				var barItem = queueItems[i];
+				var bar = document.getElementById(barItem.id);
+				
+
+					
+				barItem.movingDistance = barItem.movingDistance + barItem.speed;
+				
+				if((barItem.distance < (barItem.movingDistance + (lineWidth / 2) + (waitCount * lineWidth) )) &&
+					(barItem.section + 1) >= linePoints.length ) {
+					barItem.movingDistance = barItem.distance - (lineWidth / 2) - (waitCount * lineWidth);
+					barItem.status = "w";
+					waitCount++;
+				}
+				else if(barItem.distance < barItem.movingDistance) 
+				{
+					barItem.section++;
+					
+					if (barItem.section >= linePoints.length) {
+						barItem.section = 1;
+					}
+					
+					barItem.movingDistance = barItem.movingDistance - barItem.distance;
+					
+					var fp = linePoints[barItem.section - 1];
+					var sp = linePoints[barItem.section];
+					
+					var dx = sp.x - fp.x;
+					var dy = sp.y - fp.y;
+					
+					barItem.sx = fp.x;
+					barItem.sy = fp.y;
+					barItem.distance = Math.sqrt((dx * dx) + (dy * dy));
+					barItem.direction = Math.atan2(dy, dx);
+					
+					barItem.x = fp.x;
+					barItem.y = fp.y;
+					
+				}
+				
+				barItem.x = barItem.sx + (barItem.movingDistance * Math.cos(barItem.direction));
+				barItem.y = barItem.sy + (barItem.movingDistance * Math.sin(barItem.direction));
+					
+				bar.setAttributeNS(null, 'x', barItem.x - barItem.width / 2);
+				bar.setAttributeNS(null, 'y', barItem.y - barItem.height / 2);
+				
+				bar.setAttributeNS(null, 'transform', "rotate("+(barItem.direction * 180)/Math.PI+","+barItem.x+","+barItem.y+")")
+
+			}
+		}
+	}
+	
+	// 프로세스바를 하나씩 추가한다.
+	function addQueueItem() {
+		// 프로세스바 객체를 생겅한다.
+		var baritem = {id:"ID_"+count, x:-100, y:-100, sx:0, sy:0, width:lineWidth, height:lineWidth, direction:0, speed:4, opacity:0, movingDistance:0, distance:0,section:0,status:'p',stackCount:0};
+		// queue목록에 생성한 프로세스바를 추가한다.
+		queueItems.push(baritem);
+		// 프로세스바 객체 정보를 이용하여 프로세스바를 생성하여
+		var rect = document.createElementNS(ns, 'rect');
+		rect.setAttributeNS(null, 'width', baritem.width);
+		rect.setAttributeNS(null, 'height', baritem.height);
+		rect.setAttributeNS(null, 'x', baritem.x);
+		rect.setAttributeNS(null, 'y', baritem.y);
+		rect.setAttributeNS(null, 'id', baritem.id);
+		rect.setAttributeNS(null, 'fill', "green");
+		//rect.setAttributeNS(null, 'clip-path', "url(#clipping)")
+		canvas.appendChild(rect);
+		
+		count++
+	}
+	
+	// queue에 쌓여있는 프로세스 바를 하나씩 삭제한다.
+	function removeQueueItem() {
+		if(queueItems.length > 0) {
+			var baritem = queueItems.shift();
+			var bar = document.getElementById(baritem.id);
+			canvas.removeChild(bar);
+			
+			console.log(queueItems.length);
+		}
+	}
+	
+	// 프로세스 바를 주기적으로 호출하도록 한다.
+	setInterval(moveBar, 33);
+	// 3초 간격으로 프로세스 바를 추가한다.
+	setInterval(addQueueItem, 3000)
+	// 5초 간격으로 프로세스 바를 하나씩 삭제한다.
+	setInterval(removeQueueItem, 5000)
+	
+})();
+</script>
+</body>
+
+</html>

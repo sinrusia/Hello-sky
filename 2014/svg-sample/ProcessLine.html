@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>process line</title>
+</head>
+
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="1000">
+	 <defs>
+		<clipPath id="clipping">
+			<path id="clipPath" d="M 0 0 L 100 100 L 104 100 L 4 0 " stroke-width="0" stroke="black" fill="black"/>
+		</clipPath>
+	</defs>
+
+
+	 <g id="canvas" fill="bule"
+	    width="100%" height="100%">
+	    <rect x="0" y="0" width="100%" height="100%" fill="blue"/>
+	    
+	    <path id="line" stroke-width="0" fill="red"/>
+	    
+	    <circle id="bar" cx="50" cy="50" r="20" stroke-width="0" fill="green" clip-path="url(#clipping)"/>
+	 
+	 </g>
+
+</svg>
+
+<script type="text/javascript">
+(function(){
+	// add event listener
+	
+	var lineWidth = "5";
+	
+	var linePoints = new Array();
+	
+	var upathPoints = new Array();
+	
+	var dpathPoints = new Array();
+	
+	var canvas = document.getElementById("canvas"),
+		ns = "http://www.w3.org/2000/svg"
+		line = document.getElementById("line");
+	
+	canvas.addEventListener("mousedown", downHandler);
+	
+	
+	function downHandler(event) {
+		console.log(event);
+		var circle = document.createElementNS(ns, 'circle');
+		circle.setAttributeNS(null, "cx", event.offsetX);
+		circle.setAttributeNS(null, "cy", event.offsetY);
+		circle.setAttributeNS(null, "r",  10);
+		circle.setAttributeNS(null, "fill", "green");
+		
+		linePoints.push({x:event.offsetX, y:event.offsetY});
+		
+		
+		
+		/*
+		var d = line.getAttributeNS(null, 'd');
+		console.log(d);
+		if(d === undefined || d === "") {
+			d = "M " + event.offsetX + "," + event.offsetY;
+		} else {
+			d += " L " + event.offsetX + "," + event.offsetY;
+		}
+		line.setAttributeNS(null, 'd', d);
+		*/
+		
+		//canvas.appendChild(circle);
+		
+		upathPoints = new Array();
+		dpathPoints = new Array();
+		
+		calcPathPoints();
+		
+		d = undefined;
+		for(var j = 0; j < upathPoints.length; j++){
+			if(d === undefined || d === "") {
+				d = "M " + upathPoints[j].x + "," + upathPoints[j].y;
+			} else {
+				d += " L " + upathPoints[j].x + "," + upathPoints[j].y;
+			}
+			
+		}
+		
+		for(var k = 0; k < dpathPoints.length; k++){
+			d += " L " + dpathPoints[k].x + "," + dpathPoints[k].y;
+		}
+		
+		if (d != undefined) {
+			line.setAttributeNS(null, 'd', d);
+			clipPath.setAttributeNS(null, 'd', d);
+		}
+		
+		console.log(d);
+		
+		function calcPathPoints(){
+			if(linePoints.length > 1) {
+				var prePoint = linePoints[0];
+				var curPoint;
+				var distX, distY;
+				var uwidth, dwidth;
+				
+				uwidth = dwidth = parseInt(lineWidth / 2);
+				
+				if((lineWidth / 2) === 1) {
+					uwidth++;
+				}
+				for(var i = 1; i < linePoints.length; i++) {
+					curPoint = linePoints[i];
+					console.log("i=" + i);
+					console.log(prePoint.x + ":" + prePoint.y);
+					console.log(curPoint.x + ":" + curPoint.y);
+					
+					distX = curPoint.x - prePoint.x;
+					distY = curPoint.y - prePoint.y;
+					
+					var radian = Math.atan2(distY, distX);
+					
+					var ur = radian - (Math.PI / 2);
+					
+					var dr = radian + (Math.PI / 2);
+					
+					var sux = prePoint.x + Math.cos(ur) * uwidth;
+					var suy = prePoint.y + Math.sin(ur) * uwidth;
+					
+					var sdx = prePoint.x + Math.cos(dr) * dwidth;
+					var sdy = prePoint.y + Math.sin(dr) * dwidth;
+					
+					
+					var eux = curPoint.x + Math.cos(ur) * uwidth;
+					var euy = curPoint.y + Math.sin(ur) * uwidth;
+					
+					var edx = curPoint.x + Math.cos(dr) * dwidth;
+					var edy = curPoint.y + Math.sin(dr) * dwidth;
+					
+					console.log("x:" + sux + ",y:" + suy);
+					console.log("x:" + eux + ",y:" + euy);
+					
+					upathPoints.push({x:sux,y:suy});
+					upathPoints.push({x:eux,y:euy});
+					
+					dpathPoints.unshift({x:sdx,y:sdy});
+					dpathPoints.unshift({x:edx,y:edy});
+					
+					prePoint = curPoint;
+					
+				}
+			}
+		}
+	}
+	
+	var progressBar = {x:0, y:0, speed:4, direction:0, radius: 10};
+	var distance = 0;
+	var movingDistance = 0;
+	var section = 0;
+		
+	function moveBar() {
+		if(linePoints.length > 1) {
+			
+			movingDistance = movingDistance + progressBar.speed;
+				
+			if(distance < movingDistance) 
+			{
+				section++;
+				if (section >=linePoints.length) {
+					section = 1;
+				}
+				
+				movingDistance = movingDistance - distance;
+				var fp = linePoints[section - 1];
+				var sp = linePoints[section];
+				
+				var dx = sp.x - fp.x;
+				var dy = sp.y - fp.y;
+				
+				distance = Math.sqrt((dx * dx) + (dy * dy));
+				progressBar.direction = Math.atan2(dy, dx);
+				
+				progressBar.x = fp.x;
+				progressBar.y = fp.y;
+				
+				progressBar.x = progressBar.x + (movingDistance * Math.cos(progressBar.direction));
+				progressBar.y = progressBar.y + (movingDistance * Math.sin(progressBar.direction));
+			}
+			else 
+			{
+				progressBar.x = progressBar.x + (progressBar.speed * Math.cos(progressBar.direction));
+				progressBar.y = progressBar.y + (progressBar.speed * Math.sin(progressBar.direction));		
+			}
+		}
+		
+		bar.setAttributeNS(null, 'cx', progressBar.x);
+		bar.setAttributeNS(null, 'cy', progressBar.y);
+	}
+	
+	setInterval(moveBar, 33);	
+	
+})();
+</script>
+</body>
+
+</html>

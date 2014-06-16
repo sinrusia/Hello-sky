@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)http://samples.msdn.microsoft.com/workshop/samples/svg/zoomAndPan/testGraphic.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>SVG Test Graphic</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=9">  <!-- For intranet rendering only, remove when page is placed in production! -->
+  <script>
+    function alertUserIfSvgIsNotSupported()
+    {
+      var theSvgElement = document.getElementById('svgElement');  // Best to only access the SVG element after the page has fully loaded.
+      
+      if(theSvgElement.namespaceURI != "http://www.w3.org/2000/svg")	
+        alert("Inline SVG in HTML5 is not supported. This document requires a browser that supports HTML5 inline SVG.");
+    }    
+  </script>
+<style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style></head>
+
+<body onload="alertUserIfSvgIsNotSupported();">
+  <div align="center">
+	<svg id="theSvgElement" width="800px" height="600px">
+	  
+	  <!-- Outline the SVG viewport with a black 2 pixel line. -->
+	  <rect x="0" y="0" width="100%" height="100%" style="stroke: black; fill: none; stroke-width: 2px;"></rect>
+	  
+	  <!-- Center the following text within the 800 pixel wide SVG viewport. -->
+	  <text x="50%" y="20" style="text-anchor: middle; font-size: 12pt; font-style: italic; font-weight: bold;">
+	    This sample only works with browsers that support HTML5 and inline SVG, such as Microsoft Internet Explorer 9.
+	  </text>
+	    
+	  <!-- Place a red center point in the center of the SVG viewport. -->
+	  <circle cx="50%" cy="50%" r="5" style="fill: red;"></circle>
+	    
+	  <!-- Define an SVG graphic which will be reduced in size and reused multiple times. -->
+	  <g id="parentGraphic" style="stroke: blue; fill: blue;">
+	    <rect x="5%" y="5%" width="90%" height="90%" rx="10" ry="10" style="fill: none; stroke-width: 2px;"></rect>
+	    <text x="50%" y="97.2%" style="text-anchor: middle;">
+	      This text is going to get extremely small.
+	    </text>
+	    <text x="95.4%" y="50%" style="writing-mode: tb; text-anchor: middle;">
+	      The <tspan style="stroke: red;">red</tspan> center dot is to the left.
+	    </text>
+	    <text x="3.3%" y="50%" style="writing-mode: tb; text-anchor: middle;">
+	      The <tspan style="stroke: red; fill: red;">red</tspan> center dot is to the right.
+	    </text>
+	  </g>
+	    
+	  <!-- 
+	    To scale a graphic by a given factor around some center point, use the following formula:
+	      transform="translate( -centerX*(factor-1), -centerY*(factor-1) ) scale(factor)"
+	  -->
+	    
+	  <!-- 
+	    The scaling factor is 0.9, so we have:
+	      transform="translate( -400*(0.9-1), -300*(0.9-1) ) scale(0.9)" or
+	      transform="tanslate(40, 30) scale(0.9)"
+	  -->
+	  <use href="#parentGraphic" transform="translate(40, 30) scale(0.9)"></use>
+	    
+	  <!-- The scaling factor = 0.8, so we have transform="translate(80, 60) scale(0.8)". -->
+	  <use href="#parentGraphic" transform="translate(80, 60) scale(0.8)"></use>
+	  
+	  <!-- And so on. -->
+	  <use href="#parentGraphic" transform="translate(120, 90) scale(0.7)"></use>
+	  <use href="#parentGraphic" transform="translate(160, 120) scale(0.6)"></use>
+	  <use href="#parentGraphic" transform="translate(200, 150) scale(0.5)"></use>
+	  <use href="#parentGraphic" transform="translate(240, 180) scale(0.4)"></use>
+	  <use href="#parentGraphic" transform="translate(280, 210) scale(0.3)"></use>
+	  <use href="#parentGraphic" transform="translate(320, 240) scale(0.2)"></use>
+	  <use href="#parentGraphic" transform="translate(360, 270) scale(0.1)"></use>
+	  <use href="#parentGraphic" transform="translate(380, 285) scale(0.05)"></use>
+    </svg>
+  </div>
+
+
+</body></html>
