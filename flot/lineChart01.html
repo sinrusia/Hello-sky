@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+ 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="./js/jquery.js" type='text/javascript'></script>  
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
+     
+    <script type="text/javascript" src="./js/jquery.flot.js"></script>
+ 
+</head>
+<body>
+    <div id="cha-status" style="height:240px;"></div>
+    
+        <script>
+        (function($) {
+            
+            var cha_all = [], cha_normal = [], cha_urgency = [], ticks = [];
+
+            var date = new Date(), mm, dd;
+    
+            var all, normal, urgency, max = 0;
+    
+            for(var i = 31; i >= 1; i--) {
+                date.setDate(date.getDate() - 1);
+                mm = date.getMonth();
+                dd = date.getDate();
+                ticks.unshift([i, dd]);
+    
+                normal = Math.round(fnGetRand(20, 25));
+                urgency = Math.round(fnGetRand(4, 7));
+                all = normal + urgency;
+    
+                cha_all.unshift([i, all]);
+                cha_normal.unshift([i, normal]);
+                cha_urgency.unshift([i, urgency]);
+    
+                max = Math.max(max, all);
+            }
+    
+    
+            var plot_statistics = $.plot($("#cha-status"), [{
+                data: cha_all,
+                label: "전체 요청건수"
+            }, {
+                data: cha_normal,
+                label: "일반 요청건수"
+            }, {
+                data: cha_urgency,
+                label: "긴급 요청건수"
+            }], {
+                series: {
+                    lines: {
+                        show: true,
+                        lineWidth: 1.5,
+                        fill: 0.05
+                    },
+                    points: {
+                        show: true
+                    },
+                    shadowSize: 0
+                },
+                grid: {
+                    labelMargin: 10,
+                    hoverable: true,
+                    clickable: true,
+                    borderWidth: 0
+                },
+                colors: ["#FFFF48", "#48D331", "#F71103"],
+                xaxis: {
+                    tickColor: "transparent",
+                    ticks: ticks,
+                    tickDecimals: 0,
+                    autoscaleMargin: 0,
+                    font: {
+                        color: '#ffffff',
+                        size: 12
+                    }
+                },
+                yaxis: {
+                    ticks: 4,
+                    tickDecimals: 0,
+                    tickColor: "#e3e4e6",
+                    max: max + 20,
+                    font: {
+                        color: '#ffffff',
+                        size: 12
+                    },
+                    tickFormatter: function (val, axis) {
+                        return val;
+                    }
+                },
+                legend : {
+                    labelBoxBorderColor: 'transparent'
+                }
+            });
+            
+            $("<div id='cha-tooltip'></div>").css({
+                position: "absolute",
+                display: "none",
+                border: "1px solid #fdd",
+                padding: "2px",
+                color: "#162A30",
+                "background-color": "#fee",
+                opacity: 0.80
+            }).appendTo("body");
+    
+            $("#cha-status").bind("plothover", function (event, pos, item) {
+    
+                if (item) {
+                    var x = item.datapoint[0].toFixed(0),
+                            y = item.datapoint[1].toFixed(0);
+    
+                    $("#cha-tooltip").html(item.series.label + ': ' + y)
+                            .css({top: item.pageY+5, left: item.pageX+5})
+                            .fadeIn(200);
+                } else {
+                    $("#cha-tooltip").hide();
+                }
+            });            
+
+        })(jQuery);
+        
+        
+        function fnGetRand(min, max) {
+            if(min == undefined) min = 0;
+            if(max == undefined) max = 100;
+    
+            while(true) {
+                var val = Math.floor((Math.random() * max) + 1);
+    
+                if((val / min) > 1) {
+                    return val;
+                }
+    
+            }
+        }
+    </script>
+
+</body>
+</html>
