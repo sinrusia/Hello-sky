@@ -3,14 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+    <!-- javascript lib -->
     <script src="./js/jquery.js" type='text/javascript'></script>  
-    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
-     
     <script type="text/javascript" src="./js/jquery.flot.js"></script>
+    
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
  
 </head>
 <body>
-    <div id="isp-status-chart" style="height:240px;"></div>
+    <div id="isp-status-chart" style="width:800px;height:400px;"></div>
     
         <script>
         (function($) {
@@ -31,14 +32,16 @@
                 [3, "2014년"],
                 [4, "2015년"],
                 [5, "2016년"]];
-    
+                
+            // Data Source
             var ds = new Array();
     
             ds.push({
                 data: isp_datas,
                 label: "ISP 추진현황"
             });
-    
+            
+            // Flot Chart
             var variance = $.plot($("#isp-status-chart"), ds, {
                 series: {
                     bars: {
@@ -88,7 +91,8 @@
                     
                 }
             });
-        
+            
+            // Tooltip Element 생성
             $("<div id='tooltip'></div>").css({
                 position: "absolute",
                 display: "none",
@@ -98,7 +102,8 @@
                 "background-color": "#fee",
                 opacity: 0.80
             }).appendTo("body");
-    
+            
+            // 마우스 오버시 툴팁을 표시하기 위해 Flot Chart에 마우스오버 이벤트를 바인딩한다.
             $("#isp-status-chart").bind("plothover", function (event, pos, item) {
     
                 if (item) {
@@ -117,7 +122,9 @@
         
         })(jQuery);
         
-        
+        /**
+         * min값과 max값 사이의 임의의 값을 리턴한다.
+         */
         function fnGetRand(min, max) {
             if(min == undefined) min = 0;
             if(max == undefined) max = 100;
