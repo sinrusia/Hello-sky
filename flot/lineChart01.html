@@ -6,9 +6,9 @@
     <title></title>
     <script src="./js/jquery.js" type='text/javascript'></script>  
     <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
-     
+    
     <script type="text/javascript" src="./js/jquery.flot.js"></script>
- 
+    
 </head>
 <body>
     <div id="cha-status" style="height:240px;"></div>
@@ -28,12 +28,12 @@
                 dd = date.getDate();
                 ticks.unshift([i, dd]);
     
-                normal = Math.round(fnGetRand(20, 25));
-                urgency = Math.round(fnGetRand(4, 7));
+                normal = Math.round(fnGetRand(0, 25));
+                urgency = Math.round(fnGetRand(0, 7));
                 all = normal + urgency;
     
                 cha_all.unshift([i, all]);
-                cha_normal.unshift([i, normal]);
+                cha_normal.unshift([i, 0]);
                 cha_urgency.unshift([i, urgency]);
     
                 max = Math.max(max, all);
@@ -54,7 +54,9 @@
                     lines: {
                         show: true,
                         lineWidth: 1.5,
-                        fill: 0.05
+                        fill: 0.05,
+                        zero: false,
+                        step: true
                     },
                     points: {
                         show: true
@@ -74,7 +76,7 @@
                     tickDecimals: 0,
                     autoscaleMargin: 0,
                     font: {
-                        color: '#ffffff',
+                        color: '#000',
                         size: 12
                     }
                 },
@@ -84,7 +86,7 @@
                     tickColor: "#e3e4e6",
                     max: max + 20,
                     font: {
-                        color: '#ffffff',
+                        color: '#000',
                         size: 12
                     },
                     tickFormatter: function (val, axis) {

@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
- 
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
@@ -42,7 +41,6 @@
     
             var variance = $.plot($("#isp-status-chart"), ds, {
                 series: {
-                    stack: true,
                     bars: {
                         show: true,
                         barWidth: 0.5,
@@ -52,18 +50,23 @@
                     }
                 },
                 grid: {
+                    color: '#e0e0e0',
                     labelMargin: 10,
-                    hoverable: true,
+                    hoverable: false,
                     clickable: true,
-                    tickColor: "#e6e7e8",
-                    borderWidth: 0
+                    tickColor: "#efefef",
+                    borderWidth: 1
                 },
                 colors: ["#e73c3c", "orange", "#f1c40f", "#2bbce0"],
                 xaxis: {
                     autoscaleMargin: 0.05,
                     tickColor: "transparent",
                     ticks: ticks,
-                    tickDecimals: 0,
+                    tickDecimals: 1,
+                    color: '#efefef',
+                    tickLength: 5,
+                    tickColor: '#e0e0e0',
+                    tickSize: 1,
                     font: {
                         color: '#000',
                         size: 12
@@ -80,8 +83,9 @@
                     }
                 },
                 legend: {
-                    show:false,
-                    labelBoxBorderColor: 'transparent'
+                    show:true,
+                    labelBoxBorderColor: '#efefef'
+                    
                 }
             });
         

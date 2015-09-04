@@ -6,6 +6,7 @@
         <script type="text/javascript" src="./js/jquery.js"></script>
         <script type="text/javascript" src="./js/jquery.flot.js"></script>
         <script type="text/javascript" src="./js/jquery.flot.time.js"></script>
+        <script type="text/javascript" src="./js/jquery.flot.stack.js"></script>
     </head>
     <body>        
         <div id="placeholder" style="width:800px;height:400px;"></div>
@@ -58,11 +59,12 @@
              
             var options = {
                 series: {
+                    stack: true,
                     bars: {
                         show: true,
                         barWidth: 60 * 60 * 1000,
                         align: 'center'
-                    },
+                    }
                 },
                 yaxes: {
                     min: 0
@@ -72,7 +74,8 @@
                     timeformat: "%b %d",
                     minTickSize: [1, "month"],
                     tickSize: [1, "day"],
-                    autoscaleMargin: .10
+                    autoscaleMargin: .10,
+                    color: '#00ff00'
                 }
             };
  

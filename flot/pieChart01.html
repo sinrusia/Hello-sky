@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Pie Charts</title>
+	
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script type="text/javascript" src="./js/jquery.js"></script>
+	<script type="text/javascript" src="./js/jquery.flot.js"></script>
+	<script type="text/javascript" src="./js/jquery.flot.pie.js"></script>
+	
+	<script type="text/javascript">
+
+	$(function() {
+
+		// Example Data
+
+		//var data = [
+		//	{ label: "Series1",  data: 10},
+		//	{ label: "Series2",  data: 30},
+		//	{ label: "Series3",  data: 90},
+		//	{ label: "Series4",  data: 70},
+		//	{ label: "Series5",  data: 80},
+		//	{ label: "Series6",  data: 110}
+		//];
+
+
+		// Randomly Generated Data
+
+		var data = [],
+			series = Math.floor(Math.random() * 6) + 3;
+
+		for (var i = 0; i < series; i++) {
+			data[i] = {
+				label: "Series" + (i + 1),
+				data: Math.floor(Math.random() * 100) + 1
+			}
+		}
+
+		var placeholder = $("#placeholder");
+		
+		placeholder.unbind();
+		
+		$.plot(placeholder, data, {
+    		series: {
+        		pie: {
+            		show: true 
+				}
+            }
+        });
+		
+	});
+
+	//
+
+	function setCode(lines) {
+		$("#code").text(lines.join("\n"));
+	}
+
+	</script>
+</head>
+<body>
+    <div id="placeholder" class="demo-placeholder" style="height:500px;"></div>
+</body>
+</html>
